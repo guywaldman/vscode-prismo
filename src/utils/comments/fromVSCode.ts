@@ -6,6 +6,13 @@ import {
 } from 'vscode'
 import { raceToResolve } from '../helpers'
 
+/**
+ * This module is basically a hack.
+ * I check for all vscode extensions with the language id name in them,
+ * and then dynamically import their language configurations.
+ * If it doesn't work, I resort to using my own comment patterns.
+ */
+
 const resolveExtensionPaths = (languageId: string) => {
   const extensionsArr: Extension<any>[] = extensions.all.filter(({ id }) =>
     new RegExp(languageId, 'i').test(id)
