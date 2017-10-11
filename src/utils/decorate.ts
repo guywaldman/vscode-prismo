@@ -43,7 +43,7 @@ export default function decorate(
 
   const titleLength = title.trim().length
   const padding: number = Math.max(width - titleLength - 2 * titlePadding, 0)
-  const dashRepeatLeft: number = Math.ceil(padding / 2)
+  const dashRepeatLeft: number = Math.max(Math.ceil(padding / 2), 0)
   const dashRepeatRight: number = Math.max(padding - dashRepeatLeft, 0)
   const titlePaddingStr: string = ' '.repeat(titlePadding)
 
