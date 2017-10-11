@@ -1,67 +1,71 @@
-import { TextEditor } from 'vscode'
-import { getConfig, Config } from '../utils/config'
-
-const SPACE = '${S}'
-const TITLE = '${T}'
+import { Map, List } from 'immutable'
 
 /**
- * Comment paterns for different languages.
- * Also includes sane defaults
+ * Resolves difference in length from a string pattern.
+ * The string pattern is how the string looks after being commented, where
+ * `%s` replaces the string
+ * @param {string} commentPattern pattern for the comment (i.e. `// %s`)
+ * @return {number} difference in length
  */
-let COMMENT_PATTERNS = {
-  xml: `<!--${SPACE}${TITLE}${SPACE}-->`,
-  hash: `#${SPACE}${TITLE}`,
-  bat: `REM${SPACE}${TITLE}`,
-  tex: `${SPACE}${TITLE}`,
-  handlebars: `{{!--${TITLE}--}}`,
-  COMMON_BLOCK: `/*${SPACE}${TITLE}${SPACE}*/`,
-  COMMON: `//${SPACE}${TITLE}`
-}
+const resolveLengthDiffFromCommentPattern: (string) => number = (
+  commentPattern: string
+) => commentPattern.length - 2
 
-const LANGUAGE_TO_COMMENT_PATTERN = {
-  css: COMMENT_PATTERNS.COMMON_BLOCK,
-  xml: COMMENT_PATTERNS.xml,
-  html: COMMENT_PATTERNS.xml,
-  bat: COMMENT_PATTERNS.bat,
-  tex: COMMENT_PATTERNS.tex,
-  ruby: COMMENT_PATTERNS.hash,
-  handlebars: COMMENT_PATTERNS.handlebars,
-  shellscript: COMMENT_PATTERNS.hash,
-  default: COMMENT_PATTERNS.COMMON
-}
+/*
+ * Maps comment pattern for commenting styles. Some keys are styles
+ * (when used by several languages), while those that are used by only one language,
+ * have the key of their respective vscode language identifier (i.e. `tex` for LaTeX)
+ */
+const COMMENT_PATTERN_BY_LANG: Map<string, string> = Map({
+  xml: '<!-- %s -->',
+  hash: '# %s',
+  bat: 'REM %s',
+  tex: '% %s',
+  handlebars: '{{!-- %s --}}',
+  doubleDash: '-- %s',
+  block: '/* %s */',
+  common: '// %s'
+})
 
-// TODO: document
-const getLanguageToCommentPatternMap = () => {
-  const { commentPatterns } = getConfig()
-  return Object.assign({}, LANGUAGE_TO_COMMENT_PATTERN, commentPatterns)
-}
+// maps popular commenting styles to languages
+const PATTERN_TO_LANG: Map<string, List<string>> = Map({
+  block: List(['css']),
+  hash: List(['shellscript', 'dockerfile', 'ruby', 'coffeescript']),
+  xml: List(['xml', 'xsl', 'html', 'markdown']),
+  doubleDash: List(['lua', 'sql'])
+})
+const COMMENT_PATTERN_BY_LANG_BATCHED: Map<
+  string,
+  string
+> = PATTERN_TO_LANG.reduce((acc, langList, commentPattern) => {
+  let result = acc
+  langList.forEach(lang => {
+    result = result.set(lang, commentPattern)
+  })
+  return result
+}, Map())
 
-// TODO: document
-const resolveCommentPattern: (string) => string = (languageId: string) =>
-  getLanguageToCommentPatternMap()[languageId] ||
-  LANGUAGE_TO_COMMENT_PATTERN.default
+/**
+ * Returns the difference in length between a string, and the string after being
+ * commented by vscode using `editor.action.commentLine`
+ * For the full list of language identifiers in vscode, see: https://code.visualstudio.com/docs/languages/identifiers.
+ * @export
+ * @param {string} languageId language id
+ * @returns {number} difference in length between commented and uncommented
+ */
+export default function resolveLengthDiff(languageId: string): number {
+  // set the comment pattern according to the languageId
+  // first, from the batched map
+  let commentPattern: string = COMMENT_PATTERN_BY_LANG_BATCHED.get(
+    languageId,
+    null
+  )
+  if (!commentPattern)
+    // if it fails, then by the regular map
+    commentPattern = COMMENT_PATTERN_BY_LANG.get(
+      languageId,
+      COMMENT_PATTERN_BY_LANG.get('common')
+    )
 
-// TODO: document
-export default function resolveLengthDiff(
-  editor: TextEditor,
-  title: string = ''
-): number {
-  if (!editor) return
-
-  const { document: { languageId } } = editor
-  const commentPattern: string = resolveCommentPattern(languageId)
-
-  // calculate width that padding requires
-  const config: Config = getConfig()
-  const { padding, dash } = config
-
-  // replace S and T with actual padding and the title required, respectively
-  const spaceRegexp = new RegExp(SPACE, 'g')
-  const titleRegexp = new RegExp(TITLE, 'g')
-  const interpolatedComment = commentPattern
-    .replace(spaceRegexp, () => dash.repeat(padding))
-    .replace(titleRegexp, () => title)
-
-  // return difference
-  return interpolatedComment.length - title.length
+  return resolveLengthDiffFromCommentPattern(commentPattern)
 }
