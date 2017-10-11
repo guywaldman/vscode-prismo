@@ -1,4 +1,4 @@
-import { Config, defaultConfig } from './config'
+import { Config, Level, defaultConfig } from './config'
 
 /**
  * Formats raw title string and returns the formatted string.
@@ -18,18 +18,27 @@ const formatTitle: (string, boolean?) => string = (
  * @export
  * @param {string} title title to format
  * @param {number} width width of ruler
+ * @param {0|1|2} level
  * @return {string} formatted title
  */
 export default function decorate(
   title: string,
   width: number,
-  options: Partial<Config> = defaultConfig
+  options: Partial<Config> = defaultConfig,
+  level: Level = 0
 ): string {
   // resolve settings from config
+  const additionalOptions =
+    level === 0
+      ? {}
+      : level === 1
+        ? options.light || defaultConfig.light
+        : options.hair || defaultConfig.hair
   const { padding: titlePadding, dash, shouldUppercase } = Object.assign(
     {},
     defaultConfig,
-    options
+    options,
+    additionalOptions
   )
 
   const titleLength = title.trim().length

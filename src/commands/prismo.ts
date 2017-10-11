@@ -8,11 +8,17 @@ import {
   Selection
 } from 'vscode'
 import decorate from '../utils/decorate'
-import { getRuler } from '../utils/ruler'
+import { getRulerByLevel } from '../utils/ruler'
 import { getConfig } from '../utils/config'
 import resolveLengthDiff from '../utils/comments'
 
-export default function prismo(): void {
+/**
+ * 
+ * TODO: document
+ * @export
+ * @param {number} [level=0] 
+ */
+export default function prismo(level: number = 0): void {
   const editor: TextEditor = window.activeTextEditor
   if (!editor) {
     window.showErrorMessage('[Prismo]: No currently active editor.')
@@ -35,13 +41,15 @@ export default function prismo(): void {
 
   const title = editor.document.getText(range).trim()
   commands.executeCommand('editor.action.commentLine').then(() => {
-    const rulerWidth: number = getRuler()
+    const rulerWidth: number = getRulerByLevel(level)
     const diff: number = resolveLengthDiff(document.languageId)
     const decoratedTitle: string = decorate(
       title,
       rulerWidth - indentStartIndex - diff,
-      getConfig()
+      getConfig(),
+      level
     )
+
 
     const rangeToReplace: Range = new Range(
       new Position(lineNumber, indentStartIndex),

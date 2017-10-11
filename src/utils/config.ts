@@ -1,12 +1,29 @@
 import { window, workspace, WorkspaceConfiguration } from 'vscode'
 
-export interface Config {
+// TODO: document
+export interface TitleConfig {
   padding: number
   dash: string
   shouldUppercase: boolean
+}
+
+// TODO: document
+export interface SubtitleConfig extends TitleConfig {
+  width?: number
+}
+
+// TODO: document
+export interface Config extends TitleConfig {
   commentPatterns: object
-  light: object
-  hair: object
+  light: SubtitleConfig
+  hair: SubtitleConfig
+}
+
+// TODO: document
+export enum Level {
+  normal,
+  light,
+  hair
 }
 
 export const configOptions: string[] = [
@@ -18,16 +35,23 @@ export const configOptions: string[] = [
   'hair'
 ]
 
-const defaultConfigTopLevel = {
+const defaultConfigTopLevel: TitleConfig = {
   padding: 1,
   dash: '-',
   shouldUppercase: true
 }
+const defaultConfigSubtitle: SubtitleConfig = defaultConfigTopLevel
 
-export const defaultConfig = Object.assign({}, defaultConfigTopLevel, {
+export const defaultConfig: Config = Object.assign({}, defaultConfigTopLevel, {
   commentPatterns: {},
-  light: defaultConfigTopLevel,
-  hair: defaultConfigTopLevel
+  light: Object.assign({}, defaultConfigSubtitle, {
+    width: 40,
+    shouldUppercase: false
+  }),
+  hair: Object.assign({}, defaultConfigSubtitle, {
+    width: 30,
+    shouldUppercase: false
+  })
 })
 
 /**
