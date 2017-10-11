@@ -70,7 +70,7 @@
                         },
                         "width": {
                             "type": "number",
-                            "description": "Width of ruler for subtitle"
+                            "description": "Width of ruler for subtitle. Use 0 for full width (until ruler)"
                         }
                     },
                     "default": {
@@ -97,7 +97,7 @@
                         },
                         "width": {
                             "type": "number",
-                            "description": "Width of ruler for subtitle"
+                            "description": "Width of ruler for subtitle. Use 0 for full width (until ruler)"
                         }
                     },
                     "default": {
