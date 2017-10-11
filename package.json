@@ -1,42 +1,96 @@
 {
-    "name": "prismo",
-    "displayName": "vscode-prismo",
-    "description": "An extension to help you beautify the separators in your source code.",
-    "version": "0.0.1",
-    "publisher": "guywald",
-    "engines": {
-        "vscode": "^1.17.0"
-    },
-    "categories": [
-        "Other"
+  "name": "prismo",
+  "displayName": "vscode-prismo",
+  "description": "An extension to help you beautify the separators in your source code.",
+  "version": "0.0.1",
+  "publisher": "guywald",
+  "engines": {
+    "vscode": "^1.17.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.prismo",
+    "onCommand:extension.prismo-light",
+    "onCommand:extension.prismo-hair"
+  ],
+  "main": "./out/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.prismo",
+        "title": "Prismo: Decorate"
+      },
+      {
+        "command": "extension.light",
+        "title": "Prismo: Decorate (Light)"
+      },
+      {
+        "command": "extension.hair",
+        "title": "Prismo: Decorate (Hair)"
+      }
     ],
-    "activationEvents": [
-        "onCommand:extension.sayHello"
-    ],
-    "main": "./out/extension",
-    "contributes": {
-        "commands": [
-            {
-                "command": "extension.sayHello",
-                "title": "Hello World"
-            }
-        ]
-    },
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
-    },
-    "devDependencies": {
+    "configuration": {
+      "type": "object",
+      "title": "Prismo configuration",
+      "properties": {
+        "prismo.padding": {
+          "type": "number",
+          "default": 1,
+          "description": "Padding between title and comment pattern."
+        },
+        "prismo.dash": {
+          "type": "string",
+          "default": "-",
+          "description": "Character to be used as the repeating dash pattern."
+        },
+        "prismo.shouldUppercase": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether title should be uppercased"
+        },
+        "prismo.commentPatterns": {
+          "type": "object",
+          "default": {},
+          "description": "Map of languageId (i.e. javascript, javascriptreact, etc.) to commentPattern. See plugin documentation on how it should look."
+        },
+        "prismo.light": {
+          "type": "object",
+          "default": {
+            "padding": 1,
+            "dash": "-",
+            "shouldUppercase": true
+          },
+          "description": "Options for the 'light' decoration variation. Options are identical to top-level ones, except commentsPattern. See docs for more info."
+        },
+        "prismo.hair": {
+          "type": "object",
+          "default": {
+            "padding": 1,
+            "dash": "-",
+            "shouldUppercase": true
+          },
+          "description": "Options for the 'hair' decoration variation. Options are identical to top-level ones, except commentsPattern. See docs for more info."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "npm run compile && node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
     "@types/mocha": "^2.2.42",
     "@types/node": "^7.0.43",
     "eslint": "^4.8.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-typescript": "^0.8.0",
-        "typescript": "^2.5.3",
+    "typescript": "^2.5.3",
     "typescript-eslint-parser": "^8.0.0",
     "vscode": "^1.1.5"
-    }
+  }
 }
