@@ -24,7 +24,7 @@ const defaultConfigTopLevel = {
   shouldUppercase: true
 }
 
-export const defaultConfig = Object.assign(defaultConfigTopLevel, {
+export const defaultConfig = Object.assign({}, defaultConfigTopLevel, {
   commentPatterns: {},
   light: defaultConfigTopLevel,
   hair: defaultConfigTopLevel

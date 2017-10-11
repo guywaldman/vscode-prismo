@@ -3,12 +3,12 @@ import { Config, defaultConfig } from './config'
 /**
  * Formats raw title string and returns the formatted string.
  * @param {string} title raw title to format
- * @param {boolean} [shouldUppercase] whether the title should be uppercased (default: true)
+ * @param {boolean} shouldUppercase whether the title should be uppercased (default: true)
  * @return {string} formatted title
  */
 const formatTitle: (string, boolean?) => string = (
   title: string,
-  shouldUppercase?: boolean
+  shouldUppercase: boolean
 ) => {
   return shouldUppercase ? title.toUpperCase() : title
 }
@@ -23,24 +23,28 @@ const formatTitle: (string, boolean?) => string = (
 export default function decorate(
   title: string,
   width: number,
-  options: Config = defaultConfig
+  options: Partial<Config> = defaultConfig
 ): string {
   // resolve settings from config
-  const { padding: titlePadding, dash, shouldUppercase } = options
+  const { padding: titlePadding, dash, shouldUppercase } = Object.assign(
+    {},
+    defaultConfig,
+    options
+  )
 
-  const { length: titleLength } = title.trim()
-  const padding: number = Math.max(((width - titleLength - titlePadding) / 2), 0)
-  const paddingLeft: number = Math.floor(padding)
-  const paddingRight: number = Math.ceil(padding)
+  const titleLength = title.trim().length
+  const padding: number = Math.max(width - titleLength - 2 * titlePadding, 0)
+  const dashRepeatLeft: number = Math.ceil(padding / 2)
+  const dashRepeatRight: number = Math.max(padding - dashRepeatLeft, 0)
   const titlePaddingStr: string = ' '.repeat(titlePadding)
 
   const formattedTitle: string = formatTitle(title, shouldUppercase)
 
   return (
-    dash.repeat(paddingLeft) +
+    dash.repeat(dashRepeatLeft) +
     titlePaddingStr +
     formattedTitle +
     titlePaddingStr +
-    dash.repeat(paddingRight)
+    dash.repeat(dashRepeatRight)
   )
 }
