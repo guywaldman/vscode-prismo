@@ -10,7 +10,7 @@ import {
 import decorate from '../utils/decorate'
 import { getRulerByLevel } from '../utils/ruler'
 import { getConfig } from '../utils/config'
-import resolveLengthDiff from '../utils/comments'
+import resolveLengthDiff from '../utils/comments/index'
 
 /**
  * 
@@ -40,9 +40,9 @@ export default function prismo(level: number = 0): void {
   const range: Range = line.range
 
   const title = editor.document.getText(range).trim()
-  commands.executeCommand('editor.action.commentLine').then(() => {
+  commands.executeCommand('editor.action.commentLine').then(async () => {
     const rulerWidth: number = getRulerByLevel(level)
-    const diff: number = resolveLengthDiff(document.languageId)
+    const diff = await resolveLengthDiff(document.languageId)
     const decoratedTitle: string = decorate(
       title,
       rulerWidth - indentStartIndex - diff,

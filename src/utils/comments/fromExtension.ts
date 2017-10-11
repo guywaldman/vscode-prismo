@@ -24,6 +24,7 @@ const COMMENT_PATTERN_BY_LANG: Map<string, string> = Map({
   handlebars: '{{!-- %s --}}',
   doubleDash: '-- %s',
   block: '/* %s */',
+  pug: '//- %s',
   common: '// %s'
 })
 
@@ -32,6 +33,7 @@ const PATTERN_TO_LANG: Map<string, List<string>> = Map({
   block: List(['css']),
   hash: List(['shellscript', 'dockerfile', 'ruby', 'coffeescript']),
   xml: List(['xml', 'xsl', 'html', 'markdown']),
+  pug: List(['pug', 'jade']),
   doubleDash: List(['lua', 'sql'])
 })
 const COMMENT_PATTERN_BY_LANG_BATCHED: Map<
@@ -40,7 +42,13 @@ const COMMENT_PATTERN_BY_LANG_BATCHED: Map<
 > = PATTERN_TO_LANG.reduce((acc, langList, commentPattern) => {
   let result = acc
   langList.forEach(lang => {
-    result = result.set(lang, commentPattern)
+    result = result.set(
+      lang,
+      COMMENT_PATTERN_BY_LANG.get(
+        commentPattern,
+        COMMENT_PATTERN_BY_LANG.get('common')
+      )
+    )
   })
   return result
 }, Map())
