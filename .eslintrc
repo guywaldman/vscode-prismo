@@ -1,0 +1,19 @@
+{
+  "plugins": ["import", "typescript"],
+  "parser": "typescript-eslint-parser",
+  "rules": {
+    "curly": 0,
+    "object-curly-spacing": [1, "always"],
+    "semi": [1, "never"],
+    "quotes": [1, "single"],
+    "no-unused-vars": 1,
+    "typescript/no-unused-vars": 1
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true
+    }
+  }
+}
