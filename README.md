@@ -110,7 +110,7 @@ However, they have different defaults.
 **width**: 30
 **shouldUppercase**: false
 
-# Future ImprovementsA
+# Future Improvements
 
 ## Region Sectioning
 
