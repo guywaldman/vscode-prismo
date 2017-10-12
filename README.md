@@ -9,6 +9,9 @@ Visual Studio Code extension to beautify your titles, sections and separators.
 # Motivation
 I like neat and clean source code. It helps to visually separate sections in files (which arguably would be better off in a separate file on occasion) and I don't like manually aligning my titles and conforming to my OCD.
 
+> Note: full-width spanning titles can be obtrusive and are recommended to be used with caution. In some instances, in my opinion, they can be helpful.
+> Soon an option to opt-out of full width on the _normal_ title variation will be available.
+
 # Introduction
 > You may be familiar with my previous plugins that achieved similar goals - [AutoSect for Atom](https://github.com/guywald1/auto-sect) and [Prismo for vim](https://github.com/guywald1/vim-prismo).
 
@@ -80,7 +83,11 @@ to which the title will conform.
 
 ---
 
-# Future Improvements
+# Future ImprovementsA
+
+## Opt Out of Full Width for Normal Titles
+
+The user will be able to add a `prismo.width` option for the normal title as well.
 
 ## Region Sectioning
 
