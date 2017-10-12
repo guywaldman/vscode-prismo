@@ -40,23 +40,24 @@ export default function prismo(level: number = 0): void {
   const range: Range = line.range
 
   const title = editor.document.getText(range).trim()
-  commands.executeCommand('editor.action.commentLine').then(async () => {
-    const rulerWidth: number = getRulerByLevel(level)
-    const diff = await resolveLengthDiff(document.languageId)
-    const decoratedTitle: string = decorate(
-      title,
-      rulerWidth - indentStartIndex - diff,
-      getConfig(),
-      level
-    )
+  const rulerWidth: number = getRulerByLevel(level)
+  resolveLengthDiff(document.languageId)
+    .then(diff => {
+      const decoratedTitle: string = decorate(
+        title,
+        rulerWidth - indentStartIndex - diff,
+        getConfig(),
+        level
+      )
 
-
-    const rangeToReplace: Range = new Range(
-      new Position(lineNumber, indentStartIndex),
-      new Position(lineNumber, rulerWidth)
-    )
-    editor.edit(edit => edit.replace(rangeToReplace, decoratedTitle))
-    // TODO: move back first starting position to initial and comment line
-    commands.executeCommand('editor.action.commentLine')
-  })
+      const rangeToReplace: Range = new Range(
+        new Position(lineNumber, indentStartIndex),
+        new Position(lineNumber, rulerWidth)
+      )
+      editor.edit(edit => edit.replace(rangeToReplace, decoratedTitle))
+      commands.executeCommand('editor.action.commentLine')
+    })
+    .catch(() => {
+      window.showErrorMessage('Prismo: Ruler could not be computed.')
+    })
 }
