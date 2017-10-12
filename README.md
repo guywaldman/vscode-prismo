@@ -110,10 +110,6 @@ However, they have different defaults.
 
 # Future ImprovementsA
 
-## Opt Out of Full Width for Normal Titles
-
-The user will be able to add a `prismo.width` option for the normal title as well.
-
 ## Region Sectioning
 
 _VSCode_, among other code editors, allows the use of [region](https://code.visualstudio.com/docs/editor/codebasics#_folding) for folding.
