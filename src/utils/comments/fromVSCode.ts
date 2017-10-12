@@ -37,7 +37,7 @@ export async function getCommentForLanguageID(
             const comment = commentRule.lineComment || commentRule.blockComment
             if (!comment) reject()
             resolve(comment)
-          })
+          }).catch(() => reject())
         )
     )
   )
