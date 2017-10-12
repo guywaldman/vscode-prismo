@@ -48,7 +48,12 @@
                 "prismo.shouldUppercase": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Whether title should be uppercased"
+                    "description": "Whether title should be uppercased."
+                },
+                "prismo.width": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Width of the title. When it is 0, the title spans across the full width of the editor."
                 },
                 "prismo.light": {
                     "type": "object",
@@ -95,7 +100,7 @@
                         },
                         "width": {
                             "type": "number",
-                            "description": "Width of ruler for subtitle. Use 0 for full width (until ruler)"
+                            "description": "Width of the title. When it is 0, the title spans across the full width of the editor."
                         }
                     },
                     "default": {

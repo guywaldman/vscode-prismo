@@ -1,5 +1,5 @@
 import { workspace, window, WorkspaceConfiguration } from 'vscode'
-import { getConfig, Level, Config, SubtitleConfig } from '../utils/config'
+import { getConfig, Level, Config, TitleConfig } from '../utils/config'
 
 const DEFAULT_RULER = 80
 
@@ -30,11 +30,13 @@ export function getRuler() {
  * @returns {number} 
  */
 export function getRulerByLevel(level: Level = 0): number {
-  if (level === 0) {
-    return getRuler()
-  }
   const config: Config = getConfig()
-  const configForLevel: SubtitleConfig =
-    level === 1 ? config.light : config.hair
-  return configForLevel.width || getRuler()
+  const { light, hair } = config
+  const configForLevel: TitleConfig =
+    level === 0 ? config : level === 1 ? light : hair
+  if (configForLevel.width === 0) {
+    return getRuler()
+  } else {
+    return configForLevel.width || getRuler()
+  }
 }
