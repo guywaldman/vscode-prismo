@@ -11,22 +11,24 @@ import decorate from '../utils/decorate'
 import { getRulerByLevel } from '../utils/ruler'
 import { getConfig, Level } from '../utils/config'
 import resolveLengthDiff from '../utils/comments/index'
-import { resolveCommentPattern } from '../utils/comments/fromExtension'
+import {
+  resolveCommentPattern,
+  DEFAULT_LENGTH_DIFF
+} from '../utils/comments/fromExtension'
 
 export class Prismo {
-  public prismo(
-    level: Level = 0,
-    editor: TextEditor = window.activeTextEditor
-  ): Promise<void> {
+  static prismoWithDiff(
+    diff: number = DEFAULT_LENGTH_DIFF,
+    editor: TextEditor,
+    languageId: string,
+    level: Level = 0
+  ): Promise<string> {
     return new Promise((resolve, reject) => {
-      if (!editor) reject('No currently active editor.')
-
+      const document: TextDocument = editor.document
       const selection: Selection = editor.selection
       // TODO: handle multiple lines
       if (!selection.isSingleLine)
         reject('Decorating multiple lines is not currently supported.')
-
-      const document: TextDocument = editor.document
 
       const lineNumber = selection.anchor.line
       const line = document.lineAt(lineNumber)
@@ -35,36 +37,54 @@ export class Prismo {
 
       const title = editor.document.getText(range).trim()
       const rulerWidth: number = getRulerByLevel(level)
+      const decoratedTitle: string = decorate(
+        title,
+        rulerWidth - indentStartIndex - diff,
+        getConfig(),
+        level
+      )
+
+      const rangeToReplace: Range = new Range(
+        new Position(lineNumber, indentStartIndex),
+        new Position(lineNumber, rulerWidth)
+      )
+
+      // comment out the title
+      const commentPattern: string = resolveCommentPattern(languageId)
+      if (commentPattern === null) {
+        // if the comment pattern couldn't get resolved from the extension,
+        // use the editor's commenting
+        editor.edit(edit => edit.replace(rangeToReplace, decoratedTitle))
+        commands.executeCommand('editor.action.commentLine')
+      } else {
+        editor.edit(edit =>
+          edit.replace(
+            rangeToReplace,
+            commentPattern.replace('%s', decoratedTitle)
+          )
+        )
+      }
+    })
+  }
+  public prismo(
+    level: Level = 0,
+    editor: TextEditor = window.activeTextEditor
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!editor) reject('No currently active editor.')
+
+      const document: TextDocument = editor.document
       const { languageId } = document
       return resolveLengthDiff(languageId)
         .then(diff => {
-          const decoratedTitle: string = decorate(
-            title,
-            rulerWidth - indentStartIndex - diff,
-            getConfig(),
-            level
+          Prismo.prismoWithDiff(diff, editor, languageId, level).catch(e =>
+            reject(e)
           )
-
-          const rangeToReplace: Range = new Range(
-            new Position(lineNumber, indentStartIndex),
-            new Position(lineNumber, rulerWidth)
+        })
+        .catch(diff => {
+          Prismo.prismoWithDiff(diff, editor, languageId, level).catch(e =>
+            reject(e)
           )
-
-          // comment out the title
-          const commentPattern: string = resolveCommentPattern(languageId)
-          if (commentPattern === null) {
-            // if the comment pattern couldn't get resolved from the extension,
-            // use the editor's commenting
-            editor.edit(edit => edit.replace(rangeToReplace, decoratedTitle))
-            commands.executeCommand('editor.action.commentLine')
-          } else {
-            editor.edit(edit =>
-              edit.replace(
-                rangeToReplace,
-                commentPattern.replace('%s', decoratedTitle)
-              )
-            )
-          }
         })
     })
   }

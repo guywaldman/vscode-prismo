@@ -1,5 +1,8 @@
 import { Map, List } from 'immutable'
 
+// default length diff for the most common pattern: // %s
+export const DEFAULT_LENGTH_DIFF = 3
+
 /**
  * Resolves difference in length from a string pattern.
  * The string pattern is how the string looks after being commented, where
@@ -20,7 +23,7 @@ const COMMENT_PATTERN_BY_LANG: Map<string, string> = Map({
   xml: '<!-- %s -->',
   hash: '# %s',
   bat: 'REM %s',
-  tex: '% %s',
+  percent: '% %s',
   handlebars: '{{!-- %s --}}',
   doubleDash: '-- %s',
   block: '/* %s */',
@@ -33,8 +36,9 @@ const PATTERN_TO_LANG: Map<string, List<string>> = Map({
   block: List(['css']),
   hash: List(['shellscript', 'dockerfile', 'ruby', 'coffeescript']),
   xml: List(['xml', 'xsl', 'html', 'markdown']),
+  percent: List(['tex', 'prolog']),
   pug: List(['pug', 'jade']),
-  doubleDash: List(['lua', 'sql', 'haskell'])
+  doubleDash: List(['lua', 'sql', 'haskell', 'cabal'])
 })
 const COMMENT_PATTERN_BY_LANG_BATCHED: Map<
   string,
@@ -76,13 +80,11 @@ export function resolveCommentPattern(languageId: string): string {
  * @returns {number} difference in length between commented and uncommented
  */
 export default function resolveLengthDiff(languageId: string): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const commentPattern = resolveCommentPattern(languageId)
+  const commentPattern = resolveCommentPattern(languageId)
 
-    if (commentPattern !== null) {
-      resolve(resolveLengthDiffFromCommentPattern(commentPattern))
-    }
+  if (commentPattern !== null) {
+    return Promise.resolve(resolveLengthDiffFromCommentPattern(commentPattern))
+  }
 
-    reject()
-  })
+  return Promise.reject(null)
 }

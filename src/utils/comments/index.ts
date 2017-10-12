@@ -1,4 +1,4 @@
-import resolveFromExtension from './fromExtension'
+import resolveFromExtension, { DEFAULT_LENGTH_DIFF } from './fromExtension'
 import resolveFromVSCode from './fromVSCode'
 
 /**
@@ -8,7 +8,14 @@ import resolveFromVSCode from './fromVSCode'
  */
 
 export default function resolveLengthDiff(languageId: string): Promise<any> {
-  return resolveFromExtension(languageId).catch(
-    () => new Promise(resolve => resolve(resolveFromVSCode(languageId)))
-  )
+  return new Promise((resolve, reject) => {
+    resolveFromExtension(languageId)
+      .then(diff => resolve(diff))
+      .catch(() => {
+        resolveFromVSCode(languageId)
+          .then(diff => resolve(diff))
+          .catch(() => reject(DEFAULT_LENGTH_DIFF))
+      }
+      )
+  })
 }
