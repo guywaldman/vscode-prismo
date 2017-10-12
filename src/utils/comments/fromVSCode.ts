@@ -32,7 +32,7 @@ const resolveExtensionPaths = (languageId: string) => {
 }
 
 export function getCommentForLanguageID(languageId: string): Promise<any> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const extensionPromises = resolveExtensionPaths(languageId)
       .map(path => import(path))
       .map(promise =>
@@ -47,6 +47,7 @@ export function getCommentForLanguageID(languageId: string): Promise<any> {
       .toJS()
     raceToResolve(extensionPromises)
       .then(resolve)
+      .catch(reject)
   })
 }
 
