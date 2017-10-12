@@ -62,7 +62,6 @@ typings/
 # build dir
 out
 
-.vscode
-.vscode-test/
+.vscode-test
 .vsix
 
