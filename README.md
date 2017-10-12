@@ -1,5 +1,7 @@
 # Prismo for VSCode
 
+[![Visual Studio Marketplace](https://img.shields.io/vscode-marketplace/d/guywaldman.prismo.svg)]()
+
 Visual Studio Code extension to beautify your titles, sections and separators.
 
 [See in VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=guywaldman.prismo)
