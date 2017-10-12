@@ -17,7 +17,7 @@ There are three variations:
 
 ### Normal
 
-This title is the regular title you would get when calling `Prismo: Decorate Title`.
+This title is the regular title you would get when calling `> Prismo: Decorate Title`.
 By default, it spans across the entire document and should be used for top-level separation.
 
 ### Light and Hair
@@ -26,7 +26,47 @@ These title variations are for subtitles.
 
 IMO, _light_ should be used for subtitles and _hair_ for separating your inner-most comment regions.
 
+# Configuration
 
+You have several options to configure Prismo in your `settings.json`.
+The top-level ones are for the _normal_ title (calling `> Prismo: Decorate Title`):
+
+### `prismo.dash`
+
+The character to be used as a dash.
+**type**: _string_
+**Default**: _-_
+
+### `prismo.padding`
+
+Padding between the title and the dashes.
+
+> i.e. //<padding>myTitle
+
+**type**: _number_
+**Default**: 1
+
+### `prismo.shouldUppercase`
+
+Whether the title should be uppercased or not.
+
+**type**: _boolean_
+**Default**: true
+
+### `prismo.light` and `prismo.hair`
+
+These are configurations for your title variatons.
+Both are objects containing the properties:
+
+- dash
+- padding
+- shouldUppercase
+- width
+
+All are identical to the top-level ones, except `width` which is the width/ruler
+to which the title will conform.
+
+---
 
 # Future Improvements
 
