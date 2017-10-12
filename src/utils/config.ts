@@ -14,7 +14,6 @@ export interface SubtitleConfig extends TitleConfig {
 
 // TODO: document
 export interface Config extends TitleConfig {
-  commentPatterns: object
   light: SubtitleConfig
   hair: SubtitleConfig
 }
@@ -30,7 +29,6 @@ export const configOptions: string[] = [
   'padding',
   'dash',
   'shouldUppercase',
-  'commentPatterns',
   'light',
   'hair'
 ]
@@ -43,7 +41,6 @@ const defaultConfigTopLevel: TitleConfig = {
 const defaultConfigSubtitle: SubtitleConfig = defaultConfigTopLevel
 
 export const defaultConfig: Config = Object.assign({}, defaultConfigTopLevel, {
-  commentPatterns: {},
   light: Object.assign({}, defaultConfigSubtitle, {
     width: 40,
     shouldUppercase: false

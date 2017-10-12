@@ -47,11 +47,6 @@
                     "default": true,
                     "description": "Whether title should be uppercased"
                 },
-                "prismo.commentPatterns": {
-                    "description": "Map of languageId (i.e. javascript, javascriptreact, etc.) to commentPattern. See plugin documentation on how it should look.",
-                    "type": "object",
-                    "default": {}
-                },
                 "prismo.light": {
                     "type": "object",
                     "description": "Options for the 'light' decoration variation. Options are identical to top-level ones, except commentsPattern. See docs for more info.",
