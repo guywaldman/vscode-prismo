@@ -15,7 +15,6 @@ export default function resolveLengthDiff(languageId: string): Promise<any> {
         resolveFromVSCode(languageId)
           .then(diff => resolve(diff))
           .catch(() => reject(DEFAULT_LENGTH_DIFF))
-      }
-      )
+      })
   })
 }
