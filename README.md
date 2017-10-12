@@ -2,7 +2,7 @@
 
 Visual Studio Code extension to beautify your titles, sections and separators.
 
-![Preview](/resources/preview.gif?raw=true)
+![Preview](https://media.giphy.com/media/xT9IgC3hcjvU59RnfW/giphy.gif)
 
 # Motivation
 I like neat and clean source code. It helps to visually separate sections in files (which arguably would be better off in a separate file on occasion) and I don't like manually aligning my titles and conforming to my OCD.
