@@ -2,6 +2,8 @@
 
 Visual Studio Code extension to beautify your titles, sections and separators.
 
+[See in VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=guywaldman.prismo)
+
 ![Preview](https://media.giphy.com/media/xT9IgC3hcjvU59RnfW/giphy.gif)
 
 # Motivation
