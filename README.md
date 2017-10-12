@@ -37,16 +37,22 @@ The top-level ones are for the _normal_ title (calling `> Prismo: Decorate Title
 ### `prismo.dash`
 
 The character to be used as a dash.
+
 **type**: _string_
+
 **Default**: _-_
 
 ### `prismo.padding`
 
 Padding between the title and the dashes.
 
-> i.e. //<padding>myTitle
+> i.e. with a padding of _4_:
+> ```
+> /* ---    myTitle    ---
+> ```
 
 **type**: _number_
+
 **Default**: 1
 
 ### `prismo.shouldUppercase`
@@ -54,6 +60,7 @@ Padding between the title and the dashes.
 Whether the title should be uppercased or not.
 
 **type**: _boolean_
+
 **Default**: true
 
 ### `prismo.light` and `prismo.hair`
