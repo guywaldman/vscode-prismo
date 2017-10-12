@@ -34,7 +34,7 @@ const PATTERN_TO_LANG: Map<string, List<string>> = Map({
   hash: List(['shellscript', 'dockerfile', 'ruby', 'coffeescript']),
   xml: List(['xml', 'xsl', 'html', 'markdown']),
   pug: List(['pug', 'jade']),
-  doubleDash: List(['lua', 'sql'])
+  doubleDash: List(['lua', 'sql', 'haskell'])
 })
 const COMMENT_PATTERN_BY_LANG_BATCHED: Map<
   string,
@@ -54,6 +54,20 @@ const COMMENT_PATTERN_BY_LANG_BATCHED: Map<
 }, Map())
 
 /**
+ * TODO: document
+ * @param languageId 
+ */
+export function resolveCommentPattern(languageId: string): string {
+  // set the comment pattern according to the languageId
+  // first, from the batched map
+  return COMMENT_PATTERN_BY_LANG_BATCHED.get(
+    languageId,
+    // if it fails, then by the regular map
+    COMMENT_PATTERN_BY_LANG.get(languageId, null)
+  )
+}
+
+/**
  * Returns the difference in length between a string, and the string after being
  * commented by vscode using `editor.action.commentLine`
  * For the full list of language identifiers in vscode, see: https://code.visualstudio.com/docs/languages/identifiers.
@@ -61,19 +75,14 @@ const COMMENT_PATTERN_BY_LANG_BATCHED: Map<
  * @param {string} languageId language id
  * @returns {number} difference in length between commented and uncommented
  */
-export default function resolveLengthDiff(languageId: string): number {
-  // set the comment pattern according to the languageId
-  // first, from the batched map
-  let commentPattern: string = COMMENT_PATTERN_BY_LANG_BATCHED.get(
-    languageId,
-    null
-  )
-  if (!commentPattern)
-    // if it fails, then by the regular map
-    commentPattern = COMMENT_PATTERN_BY_LANG.get(
-      languageId,
-      COMMENT_PATTERN_BY_LANG.get('common')
-    )
+export default function resolveLengthDiff(languageId: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const commentPattern = resolveCommentPattern(languageId)
 
-  return resolveLengthDiffFromCommentPattern(commentPattern)
+    if (commentPattern !== null) {
+      resolve(resolveLengthDiffFromCommentPattern(commentPattern))
+    }
+
+    reject()
+  })
 }

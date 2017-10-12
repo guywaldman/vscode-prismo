@@ -11,6 +11,7 @@ import decorate from '../utils/decorate'
 import { getRulerByLevel } from '../utils/ruler'
 import { getConfig } from '../utils/config'
 import resolveLengthDiff from '../utils/comments/index'
+import { resolveCommentPattern } from '../utils/comments/fromExtension'
 
 /**
  * 
@@ -41,7 +42,8 @@ export default function prismo(level: number = 0): void {
 
   const title = editor.document.getText(range).trim()
   const rulerWidth: number = getRulerByLevel(level)
-  resolveLengthDiff(document.languageId)
+  const { languageId } = document
+  resolveLengthDiff(languageId)
     .then(diff => {
       const decoratedTitle: string = decorate(
         title,
@@ -54,8 +56,22 @@ export default function prismo(level: number = 0): void {
         new Position(lineNumber, indentStartIndex),
         new Position(lineNumber, rulerWidth)
       )
-      editor.edit(edit => edit.replace(rangeToReplace, decoratedTitle))
-      commands.executeCommand('editor.action.commentLine')
+
+      // comment out the title
+      const commentPattern: string = resolveCommentPattern(languageId)
+      if (commentPattern === null) {
+        // if the comment pattern couldn't get resolved from the extension,
+        // use the editor's commenting
+        editor.edit(edit => edit.replace(rangeToReplace, decoratedTitle))
+        commands.executeCommand('editor.action.commentLine')
+      } else {
+        editor.edit(edit =>
+          edit.replace(
+            rangeToReplace,
+            commentPattern.replace('%s', decoratedTitle)
+          )
+        )
+      }
     })
     .catch(() => {
       window.showErrorMessage('Prismo: Ruler could not be computed.')
