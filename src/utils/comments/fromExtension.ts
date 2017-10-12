@@ -38,7 +38,16 @@ const PATTERN_TO_LANG: Map<string, List<string>> = Map({
   xml: List(['xml', 'xsl', 'html', 'markdown']),
   percent: List(['tex', 'prolog']),
   pug: List(['pug', 'jade']),
-  doubleDash: List(['lua', 'sql', 'haskell', 'cabal'])
+  doubleDash: List(['lua', 'sql', 'haskell', 'cabal']),
+  common: List([
+    'javascript',
+    'javascriptreact',
+    'typescript',
+    'java',
+    'c',
+    'cpp',
+    'd'
+  ])
 })
 const COMMENT_PATTERN_BY_LANG_BATCHED: Map<
   string,
