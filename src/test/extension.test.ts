@@ -31,3 +31,5 @@ suite('Decoration Test', () => {
     assert.equal(decorate('Foo', 87, { shouldUppercase: false, padding: 2 }), toConfig(`${'-'.repeat(40)}  Foo  ${'-'.repeat(40)}`))
   })
 })
+
+// TODO: add more tests!
