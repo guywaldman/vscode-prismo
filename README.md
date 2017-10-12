@@ -49,6 +49,16 @@ The character to be used as a dash.
 
 **Default**: _-_
 
+### `prismo.width`
+
+How wide the title should span.
+
+If it is 0, the title will span across the entire editor width.
+
+**type**: _number_
+
+**Default**: 0
+
 ### `prismo.padding`
 
 Padding between the title and the dashes.
@@ -70,7 +80,7 @@ Whether the title should be uppercased or not.
 
 **Default**: true
 
-### `prismo.light` and `prismo.hair`
+## `prismo.light` and `prismo.hair`
 
 These are configurations for your title variatons.
 Both are objects containing the properties:
@@ -80,10 +90,23 @@ Both are objects containing the properties:
 - shouldUppercase
 - width
 
-All are identical to the top-level ones, except `width` which is the width/ruler
-to which the title will conform.
+All are identical to the top-level ones, and are specific to each title variation.
 
----
+However, they have different defaults.
+
+### `prismo.light`
+
+**Default (overrides)**:
+
+**width**: 40
+**shouldUppercase**: false
+
+### `prismo.hair`
+
+**Default (overrides)**:
+
+**width**: 30
+**shouldUppercase**: false
 
 # Future ImprovementsA
 
