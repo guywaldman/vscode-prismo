@@ -3,10 +3,12 @@ import { getConfig, Level, Config, TitleConfig } from '../utils/config'
 
 const DEFAULT_RULER = 80
 
+
+
 /**
  * Returns ruler to be used as full width.
- * Utilizes editor.rulers (or [80] by default) and returns the first item
- * in the array.
+ * Utilizes editor.rulers (or [80] by default) and returns the first 
+ * ruler boundary
  * 
  * @export
  * @returns {number} 
@@ -17,13 +19,13 @@ export function getRuler() {
     window.activeTextEditor.document.uri
   )
   const rulers: number[] = editorConfig.get('rulers') || [DEFAULT_RULER]
-  return rulers[0]
+  return Math.max(rulers.reduce(toFirstBoundary, 0), DEFAULT_RULER)
 }
 
 /**
  * Returns ruler to be used as full width.
- * Utilizes editor.rulers (or [80] by default) and returns the first item
- * in the array.
+ * Utilizes editor.rulers (or [80] by default) and returns the first 
+ * ruler boundary
  * 
  * @export
  * @param {0|1|2} [level=0]
@@ -40,3 +42,14 @@ export function getRulerByLevel(level: Level = 0): number {
     return configForLevel.width || getRuler()
   }
 }
+
+/**
+ * Returns the first ruler boundary starting from 0
+ * assuming code is most likely intended to end there
+ * @param {rulerTarget} 
+ * @param {rulerPosition}
+ * @returns {number} 
+ */
+function toFirstBoundary(rulerTarget: number, rulerPosition: number): number {
+  return rulerTarget === 0 ? rulerPosition : rulerTarget
+} 
