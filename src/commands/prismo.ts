@@ -10,15 +10,11 @@ import {
 import decorate from '../utils/decorate'
 import { getRulerByLevel } from '../utils/ruler'
 import { getConfig, Level } from '../utils/config'
-import resolveLengthDiff from '../utils/comments/index'
-import {
-  resolveCommentPattern,
-  DEFAULT_LENGTH_DIFF
-} from '../utils/comments/fromExtension'
+import { commentPatternFromLanguage, lengthDiffFromCommentPattern } from '../utils/comments/index'
 
 export class Prismo {
   static prismoWithDiff(
-    diff: number = DEFAULT_LENGTH_DIFF,
+    diff: number = 2,
     editor: TextEditor,
     languageId: string,
     level: Level = 0
@@ -50,43 +46,33 @@ export class Prismo {
       )
 
       // comment out the title
-      const commentPattern: string = resolveCommentPattern(languageId)
-      if (commentPattern === null) {
-        // if the comment pattern couldn't get resolved from the extension,
-        // use the editor's commenting
-        editor.edit(edit => edit.replace(rangeToReplace, decoratedTitle))
-        commands.executeCommand('editor.action.commentLine')
-      } else {
-        editor.edit(edit =>
-          edit.replace(
-            rangeToReplace,
-            commentPattern.replace('%s', decoratedTitle)
+      commentPatternFromLanguage(languageId).then(commentPattern => {
+        if (commentPattern === null) {
+          // if the comment pattern couldn't get resolved from the extension,
+          // use the editor's commenting
+          editor.edit(edit => edit.replace(rangeToReplace, decoratedTitle))
+          commands.executeCommand('editor.action.commentLine')
+        } else {
+          editor.edit(edit =>
+            edit.replace(
+              rangeToReplace,
+              commentPattern.replace('%s', decoratedTitle)
+            )
           )
-        )
-      }
+        }
+      })
     })
   }
   public prismo(
     level: Level = 0,
     editor: TextEditor = window.activeTextEditor
-  ): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!editor) reject('No currently active editor.')
+  ): Promise<any> {
+    if (!editor) return Promise.reject(new Error('No currently active editor.'));
 
-      const document: TextDocument = editor.document
-      const { languageId } = document
-      return resolveLengthDiff(languageId)
-        .then(diff => {
-          Prismo.prismoWithDiff(diff, editor, languageId, level).catch(e =>
-            reject(e)
-          )
-        })
-        .catch(diff => {
-          Prismo.prismoWithDiff(diff, editor, languageId, level).catch(e =>
-            reject(e)
-          )
-        })
-    })
+    const document: TextDocument = editor.document
+    const { languageId } = document
+    const diff = lengthDiffFromCommentPattern(languageId);
+    return Promise.resolve(Prismo.prismoWithDiff(diff, editor, languageId, level))
   }
 }
 

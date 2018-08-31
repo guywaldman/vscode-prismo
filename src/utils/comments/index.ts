@@ -1,20 +1,25 @@
-import resolveFromExtension, { DEFAULT_LENGTH_DIFF } from './fromExtension'
-import resolveFromVSCode from './fromVSCode'
+import patternFromPresets from './patternFromPresets';
 
 /**
- * I check for all vscode extensions with the language id name in them,
- * and then dynamically import their language configurations.
- * If it doesn't work, I resort to using my own comment patterns.
+ * Resolves difference in length from a string pattern.
+ * The string pattern is how the string looks after being commented, where
+ * `%s` replaces the string
+ * @param {string} commentPattern pattern for the comment (i.e. `// %s`)
+ * @return {number} difference in length
  */
+const lengthDiffFromCommentPattern: (string) => number = (
+  commentPattern: string
+) => commentPattern.length - 2;
 
-export default function resolveLengthDiff(languageId: string): Promise<any> {
-  return new Promise((resolve, reject) => {
-    resolveFromExtension(languageId)
-      .then(diff => resolve(diff))
-      .catch(() => {
-        resolveFromVSCode(languageId)
-          .then(diff => resolve(diff))
-          .catch(() => reject(DEFAULT_LENGTH_DIFF))
-      })
-  })
+function commentPatternFromLanguage(languageId: string) : Promise<string> {
+  // TODO: handle non-existant
+  const tryPatternFromPresets = patternFromPresets(languageId);
+  if (tryPatternFromPresets) {
+    return Promise.resolve(tryPatternFromPresets);
+  }
+  // TODO: handle user prompt to add comment pattern
+  return Promise.resolve("// %s");
 }
+
+
+export { lengthDiffFromCommentPattern, commentPatternFromLanguage  };
