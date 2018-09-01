@@ -1,6 +1,11 @@
 import * as vscode from "vscode";
 import patternFromPresets from "./patternFromPresets";
-import patternFromConfiguration from "./patternFromConfiguration";
+import {
+  tryResolveFromConfig,
+  tryUpdateConfigWithUserInput
+} from "./patternFromConfiguration";
+
+const DEFAULT_PATTERN = "// %s";
 
 /**
  * Resolves difference in length from a string pattern.
@@ -13,23 +18,44 @@ const lengthDiffFromCommentPattern: (string) => number = commentPattern =>
   commentPattern.length - 2;
 
 /**
- * Resolves a comment pattern from the languageId in the active editor.
- * In case the languageId is not inside the presets (defined by the extension),
- * the user will input their own style of comment.
- *
- * > The setting will be saved in the configuration for future uses.
+ * Resolves a comment pattern from the languageId in the active editor, as follows:
+ *  1. Try resolving from configuration.
+ *  2. Try resolving from presets.
+ *  3. Ask for user input and update configuration.
+ *     > The setting will be saved in the configuration for future uses.
  * @param languageId language id in the editor
  * @return {Promise<string>} the comment pattern for the languageId
  */
 async function commentPatternFromLanguage(languageId: string): Promise<string> {
+  const configuration = vscode.workspace.getConfiguration(
+    "prismo.commentPatterns",
+    null
+  );
+
+  // resolve from config
+  const patternFromConfig = tryResolveFromConfig(configuration, languageId);
+  if (patternFromConfig) {
+    return Promise.resolve(patternFromConfig);
+  }
+
+  // resolve from presets
   const tryPatternFromPresets = patternFromPresets(languageId);
   if (tryPatternFromPresets) {
     return Promise.resolve(tryPatternFromPresets);
   }
 
+  // ask for user input and update config
+  try {
+    const userPattern = await tryUpdateConfigWithUserInput(
+      configuration,
+      languageId
+    );
+    return userPattern;
+  } catch (e) {
+    console.log(e);
+  }
 
-  const pattern = await patternFromConfiguration(languageId);
-  return Promise.resolve(pattern);
+  return DEFAULT_PATTERN;
 }
 
 export { lengthDiffFromCommentPattern, commentPatternFromLanguage };

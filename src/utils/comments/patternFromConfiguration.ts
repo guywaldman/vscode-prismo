@@ -1,16 +1,19 @@
 import * as vscode from "vscode";
 
-const DEFAULT_PATTERN = "// %s";
+// TODO: doc
+function tryResolveFromConfig(
+  configuration: vscode.WorkspaceConfiguration,
+  languageId: string
+): string | undefined {
+  const patternFromConfig: string = configuration.get(languageId);
+  return patternFromConfig;
+}
 
 // TODO: doc
-async function patternFromConfiguration(languageId: string) {
-
-  const configuration = vscode.workspace.getConfiguration();
-  const patternsFromConfiguration = configuration.get("prismo.commentPatterns");
-  if (patternsFromConfiguration.hasOwnProperty(languageId)) {
-    return patternsFromConfiguration[languageId];
-  }
-
+async function tryUpdateConfigWithUserInput(
+  configuration: vscode.WorkspaceConfiguration,
+  languageId: string
+) {
   let patternFromInput = "";
   while (
     patternFromInput !== null &&
@@ -22,14 +25,31 @@ async function patternFromConfiguration(languageId: string) {
       value: "// %s"
     });
   }
+  if (!patternFromInput) {
+    throw new Error(
+      `User input for comment pattern for language ${languageId} could not be determined.`
+    );
+  }
 
-  await configuration.update(
-    `prismo.commentPatterns`,
-    { ...patternsFromConfiguration, [languageId]: patternFromInput },
-    vscode.ConfigurationTarget.Global
+  const patternsFromConfiguration = configuration.get(
+    "prismo.commentPatterns",
+    {}
   );
+  try {
+    await vscode.workspace
+      .getConfiguration()
+      .update(
+        "prismo.commentPatterns",
+        { ...patternsFromConfiguration, [languageId]: patternFromInput },
+        vscode.ConfigurationTarget.Global
+      );
+  } catch (e) {
+    throw new Error(
+      `Error occured while attempting to update configuration for user input: ${e}`
+    );
+  }
 
-  return patternFromInput || DEFAULT_PATTERN;
+  return Promise.resolve(patternFromInput);
 }
 
-export default patternFromConfiguration;
+export { tryResolveFromConfig, tryUpdateConfigWithUserInput };

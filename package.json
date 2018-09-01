@@ -36,31 +36,37 @@
             "title": "Prismo configuration",
             "properties": {
                 "prismo.commentPatterns": {
+                    "scope": "resource",
                     "type": "object",
                     "default": {}
                 },
                 "prismo.padding": {
                     "type": "number",
+                    "scope": "resource",
                     "default": 2,
                     "description": "Padding between title and comment pattern."
                 },
                 "prismo.dash": {
                     "type": "string",
+                    "scope": "resource",
                     "default": "-",
                     "description": "Character to be used as the repeating dash pattern."
                 },
                 "prismo.shouldUppercase": {
                     "type": "boolean",
+                    "scope": "resource",
                     "default": true,
                     "description": "Whether title should be uppercased."
                 },
                 "prismo.width": {
                     "type": "number",
+                    "scope": "resource",
                     "default": 0,
                     "description": "Width of the title. When it is 0, the title spans across the full width of the editor."
                 },
                 "prismo.light": {
                     "type": "object",
+                    "scope": "resource",
                     "description": "Options for the 'light' decoration variation. Options are identical to top-level ones, except commentsPattern. See docs for more info.",
                     "properties": {
                         "padding": {
@@ -89,6 +95,7 @@
                 },
                 "prismo.hair": {
                     "type": "object",
+                    "scope": "resource",
                     "properties": {
                         "padding": {
                             "type": "number",

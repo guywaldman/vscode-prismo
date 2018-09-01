@@ -1,6 +1,7 @@
 {
     "rules": {
         "semicolon": [true, "always"],
-        "quotemark": [true, "double"]
+        "quotemark": [true, "double"],
+        "max-line-length": [false, 120]
     }
 }
