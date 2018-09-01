@@ -1,5 +1,6 @@
-import { window } from "vscode";
+import * as vscode from "vscode";
 import patternFromPresets from "./patternFromPresets";
+import patternFromSettings from "./patternFromSettings";
 
 /**
  * Resolves difference in length from a string pattern.
@@ -8,9 +9,8 @@ import patternFromPresets from "./patternFromPresets";
  * @param {string} commentPattern pattern for the comment (i.e. `// %s`)
  * @return {number} difference in length
  */
-const lengthDiffFromCommentPattern: (string) => number = (
-  commentPattern: string
-) => commentPattern.length - 2;
+const lengthDiffFromCommentPattern: (string) => number = commentPattern =>
+  commentPattern.length - 2;
 
 /**
  * Resolves a comment pattern from the languageId in the active editor.
@@ -22,19 +22,25 @@ const lengthDiffFromCommentPattern: (string) => number = (
  * @return {Promise<string>} the comment pattern for the languageId
  */
 async function commentPatternFromLanguage(languageId: string): Promise<string> {
-  // const tryPatternFromPresets = patternFromPresets(languageId);
-  // if (tryPatternFromPresets) {
-  //   return Promise.resolve(tryPatternFromPresets);
-  // }
-  let input = "";
-  while (!input.includes("%s")) {
-    input = await window.showInputBox({
-      prompt:
-        "This language is not recognized. Enter a comment pattern for this language in the style `// %s` where %s is the comment text",
-      value: "// %s"
-    });
+  const tryPatternFromPresets = patternFromPresets(languageId);
+  if (tryPatternFromPresets) {
+    return Promise.resolve(tryPatternFromPresets);
   }
-  return Promise.resolve(input);
+
+  const configuration = vscode.workspace.getConfiguration();
+  const patternsFromConfiguration = configuration.get("prismo.commentPatterns");
+  if (patternsFromConfiguration.hasOwnProperty(languageId)) {
+    return patternsFromConfiguration[languageId];
+  }
+
+  const patternFromInput = patternFromSettings(languageId);
+
+  await configuration.update(
+    `prismo.commentPatterns`,
+    { ...patternsFromConfiguration, [languageId]: patternFromInput },
+    vscode.ConfigurationTarget.Global
+  );
+  return Promise.resolve(patternFromInput);
 }
 
 export { lengthDiffFromCommentPattern, commentPatternFromLanguage };
