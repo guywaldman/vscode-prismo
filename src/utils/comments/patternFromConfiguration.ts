@@ -3,7 +3,14 @@ import * as vscode from "vscode";
 const DEFAULT_PATTERN = "// %s";
 
 // TODO: doc
-async function patternFromSettings(languageId: string) {
+async function patternFromConfiguration(languageId: string) {
+
+  const configuration = vscode.workspace.getConfiguration();
+  const patternsFromConfiguration = configuration.get("prismo.commentPatterns");
+  if (patternsFromConfiguration.hasOwnProperty(languageId)) {
+    return patternsFromConfiguration[languageId];
+  }
+
   let patternFromInput = "";
   while (
     patternFromInput !== null &&
@@ -15,7 +22,14 @@ async function patternFromSettings(languageId: string) {
       value: "// %s"
     });
   }
+
+  await configuration.update(
+    `prismo.commentPatterns`,
+    { ...patternsFromConfiguration, [languageId]: patternFromInput },
+    vscode.ConfigurationTarget.Global
+  );
+
   return patternFromInput || DEFAULT_PATTERN;
 }
 
-export default patternFromSettings;
+export default patternFromConfiguration;

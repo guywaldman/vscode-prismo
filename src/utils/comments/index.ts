@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import patternFromPresets from "./patternFromPresets";
-import patternFromSettings from "./patternFromSettings";
+import patternFromConfiguration from "./patternFromConfiguration";
 
 /**
  * Resolves difference in length from a string pattern.
@@ -27,20 +27,9 @@ async function commentPatternFromLanguage(languageId: string): Promise<string> {
     return Promise.resolve(tryPatternFromPresets);
   }
 
-  const configuration = vscode.workspace.getConfiguration();
-  const patternsFromConfiguration = configuration.get("prismo.commentPatterns");
-  if (patternsFromConfiguration.hasOwnProperty(languageId)) {
-    return patternsFromConfiguration[languageId];
-  }
 
-  const patternFromInput = patternFromSettings(languageId);
-
-  await configuration.update(
-    `prismo.commentPatterns`,
-    { ...patternsFromConfiguration, [languageId]: patternFromInput },
-    vscode.ConfigurationTarget.Global
-  );
-  return Promise.resolve(patternFromInput);
+  const pattern = await patternFromConfiguration(languageId);
+  return Promise.resolve(pattern);
 }
 
 export { lengthDiffFromCommentPattern, commentPatternFromLanguage };
