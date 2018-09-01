@@ -4,21 +4,21 @@ export function raceToResolve(promises) {
     // Are there any values to check?
     if (promises.length === 0) {
       // All were rejected
-      reject()
+      reject();
     }
     // Try the first value
     promises[0]
       .then(function(val) {
         // Resolved, we're all done
-        resolve(val)
+        resolve(val);
       })
       .catch(function() {
         // Rejected, remove the first item from the array and recursively
         // try the next one
-        promises.shift()
+        promises.shift();
         raceToResolve(promises)
           .then(resolve)
-          .catch(reject)
-      })
-  })
+          .catch(reject);
+      });
+  });
 }
