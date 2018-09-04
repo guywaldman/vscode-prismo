@@ -1,9 +1,10 @@
 import * as vscode from "vscode";
-import patternFromPresets from "./patternFromPresets";
+
 import {
   tryResolveFromConfig,
   tryUpdateConfigWithUserInput
 } from "./patternFromConfiguration";
+import patternFromPresets from "./patternFromPresets";
 
 const DEFAULT_PATTERN = "// %s";
 
@@ -14,8 +15,9 @@ const DEFAULT_PATTERN = "// %s";
  * @param {string} commentPattern pattern for the comment (i.e. `// %s`)
  * @return {number} difference in length
  */
-const lengthDiffFromCommentPattern: (string) => number = commentPattern =>
-  commentPattern.length - 2;
+function lengthDiffFromCommentPattern (commentPattern: string) : number {
+  return commentPattern.length - 2;
+}
 
 /**
  * Resolves a comment pattern from the languageId in the active editor, as follows:
