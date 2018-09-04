@@ -1,10 +1,9 @@
-"use strict";
-import { commands, Disposable, ExtensionContext } from "vscode";
+import { commands, Disposable, TextEditor, TextEditorEdit, ExtensionContext } from "vscode";
 import { Level } from "./utils/config";
 import prismo from "./commands/prismo";
 
-function prismoCommand(level: Level = 0): () => void {
-  return () => prismo(level);
+function prismoCommand(level: Level = 0): (TextEditor) => void {
+  return (editor: TextEditor) => prismo(editor, level);
 }
 
 // (from docs)
@@ -14,17 +13,17 @@ export function activate(context: ExtensionContext) {
   // log that everything is working as expected
   console.log("extension vscode-prismo is running");
 
-  let disposable: Disposable = commands.registerCommand(
+  let disposable: Disposable = commands.registerTextEditorCommand(
     "extension.prismo",
     prismoCommand()
   );
 
-  let disposableLight: Disposable = commands.registerCommand(
+  let disposableLight: Disposable = commands.registerTextEditorCommand(
     "extension.prismo-light",
     prismoCommand(1)
   );
 
-  let disposableHair: Disposable = commands.registerCommand(
+  let disposableHair: Disposable = commands.registerTextEditorCommand(
     "extension.prismo-hair",
     prismoCommand(2)
   );

@@ -1,6 +1,7 @@
 import {
   window,
   TextEditor,
+  TextEditorEdit,
   commands,
   Range,
   Position,
@@ -15,82 +16,88 @@ import {
   lengthDiffFromCommentPattern
 } from "../utils/comments/index";
 
-export class Prismo {
-  static prismoWithDiff(
-    diff: number = 2,
-    editor: TextEditor,
-    languageId: string,
-    level: Level = 0
-  ): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const document: TextDocument = editor.document;
-      const selection: Selection = editor.selection;
-      // TODO: handle multiple lines
-      if (!selection.isSingleLine)
-        reject("Decorating multiple lines is not currently supported.");
+interface Prismo {
+  new(TextEditor, Level);
+  decorate(): Promise<any>;
+}
 
-      const lineNumber = selection.anchor.line;
+class Prismo implements Prismo {
+  private _level : number;
+  private _editor: TextEditor;
+
+  constructor(editor: TextEditor, level: Level) {
+    this._editor = editor;
+    this._level = level;
+  }
+
+  // TODO: document
+  public async decorate(): Promise<any> {
+    const editor = this._editor;
+    const selection = editor.selection;
+
+    if (!this._editor)
+      return Promise.reject(new Error("No currently active editor."));
+
+    const { document: { languageId } } = editor;
+
+    const commentPattern = await commentPatternFromLanguage(languageId);
+    const linesDecorationInfo = await this._computeRangeAndTitle();
+
+    for (let { rangeToReplace, decoratedTitle } of linesDecorationInfo) {
+      await editor.edit((edit: TextEditorEdit) => {
+        edit.replace(
+          rangeToReplace,
+          commentPattern.replace("%s", decoratedTitle)
+        );
+      });
+    }
+    let linesToMoveDown = Math.max(0, selection.start.line - selection.end.line) + 1;
+    commands.executeCommand("cursorMove", {
+      to: "down",
+      by: "line",
+      value: linesToMoveDown
+    });
+
+  }
+
+  // TODO: document
+  private _computeRangeAndTitle() : Promise<Array<{ decoratedTitle: string, rangeToReplace: Range }>> {
+    const editor = this._editor;
+    const selection: Selection = editor.selection;
+
+    const diff = lengthDiffFromCommentPattern(editor.document.languageId);
+
+    let results = [];
+    for (let lineNumber = selection.start.line; lineNumber <= selection.end.line; lineNumber++) {
+      const { document } = editor;
       const line = document.lineAt(lineNumber);
+      const rulerWidth: number = getRulerByLevel(this._level);
       const { firstNonWhitespaceCharacterIndex: indentStartIndex } = line;
-      const range: Range = line.range;
-
-      const title = editor.document.getText(range).trim();
-      const rulerWidth: number = getRulerByLevel(level);
-      const decoratedTitle: string = decorate(
-        title,
-        rulerWidth - indentStartIndex - diff,
-        getConfig(),
-        level
-      );
-
       const rangeToReplace: Range = new Range(
         new Position(lineNumber, indentStartIndex),
         new Position(lineNumber, rulerWidth)
       );
 
-      // comment out the title
-      commentPatternFromLanguage(languageId).then(commentPattern => {
-        if (commentPattern === null) {
-          // if the comment pattern couldn't get resolved from the extension,
-          // use the editor's commenting
-          editor.edit(edit => edit.replace(rangeToReplace, decoratedTitle));
-          commands.executeCommand("editor.action.commentLine");
-        } else {
-          editor.edit(edit =>
-            edit.replace(
-              rangeToReplace,
-              commentPattern.replace("%s", decoratedTitle)
-            )
-          );
-        }
-      });
-    });
-  }
-  public prismo(
-    level: Level = 0,
-    editor: TextEditor = window.activeTextEditor
-  ): Promise<any> {
-    if (!editor)
-      return Promise.reject(new Error("No currently active editor."));
+      const range: Range = line.range;
 
-    const document: TextDocument = editor.document;
-    const { languageId } = document;
-    const diff = lengthDiffFromCommentPattern(languageId);
-    return Promise.resolve(
-      Prismo.prismoWithDiff(diff, editor, languageId, level)
-    );
+      const title = editor.document.getText(range).trim();
+      const decoratedTitle: string = decorate(
+        title,
+        rulerWidth - indentStartIndex - diff,
+        getConfig(),
+        this._level
+      );
+
+      results.push({ decoratedTitle, rangeToReplace });
+    }
+    return Promise.resolve(results);
   }
 }
 
-/**
- *
- * TODO: document
- * @export
- * @param {number} [level=0]
- */
-export default function prismo(level: number = 0): void {
-  const prismo: Prismo = new Prismo();
+// TODO: document
+export default function prismo(editor: TextEditor, level: number = 0): void {
+  const prismo: Prismo = new Prismo(editor, level);
   prismo
-    .prismo(level)
-    .catch(e => window.showErrorMessage("Prismo " + e || "Unexepected error."));
+    .decorate()
+    .catch(e => window.showErrorMessage("[PRISMO]: " + e || "Unexepected error."));
 }
