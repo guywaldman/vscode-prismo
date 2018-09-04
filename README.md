@@ -105,17 +105,17 @@ However, they have different defaults.
 
 ### `prismo.light`
 
-**Default (overrides)**:
+**Defaults**:
 
-**width**: 40
-**shouldUppercase**: false
+* **width**: 40
+* **shouldUppercase**: false
 
 ### `prismo.hair`
 
-**Default (overrides)**:
+**Defaults**:
 
-**width**: 30
-**shouldUppercase**: false
+* **width**: 30
+* **shouldUppercase**: false
 
 ### `prismo.commentPatterns`
 
