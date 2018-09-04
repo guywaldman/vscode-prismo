@@ -1,3 +1,5 @@
+// TODO: add all languages from https://code.visualstudio.com/docs/languages/identifiers
+
 const BY_LANGUAGE = {
   xml: "<!-- %s -->",
   hash: "# %s",
@@ -37,6 +39,7 @@ const BY_PATTERN = {
     "typescript",
     "java",
     "c",
+    "c#",
     "cpp",
     "d"
   ]
