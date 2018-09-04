@@ -2,6 +2,7 @@
     "name": "prismo",
     "displayName": "Prismo",
     "description": "An extension to help you beautify the separators in your source code.",
+    "repository": "https://www.github.com/guywald1/vscode-prismo",
     "version": "0.5.1",
     "publisher": "guywaldman",
     "engines": {

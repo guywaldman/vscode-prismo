@@ -5,41 +5,47 @@
 
 Visual Studio Code extension to beautify your titles, sections and separators.
 
-[See on VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=guywaldman.prismo)
+[Marketplace](https://marketplace.visualstudio.com/items?itemName=guywaldman.prismo)  |  [GitHub](https://github.com/guywald1/vscode-prismo)
 
-[See on GitHub](https://github.com/guywald1/vscode-prismo)
+<!-- ![Preview](https://raw.githubusercontent.com/guywald1/vscode-prismo/master/assets/preview.gif) -->
 
-![Preview](https://media.giphy.com/media/xT9IgC3hcjvU59RnfW/giphy.gif)
+![Preview](/assets/preview.gif)
 
-# Motivation
-I like neat and clean source code. It helps to visually separate sections in files (which arguably would be better off in a separate file on occasion) and I don't like manually aligning my titles and conforming to my OCD.
+---
+
+## Motivation
+
+I like neat and clean source code. That's about all there is to it.
+
+> You may be familiar with my previous plugins that achieved similar goals - [AutoSect for Atom](https://github.com/guywald1/auto-sect) and [Prismo for vim](https://github.com/guywald1/vim-prismo).
 
 > **Note:** full-width spanning titles can be obtrusive and are recommended to be used with caution. In some instances, in my opinion, they can be helpful.
 > An option to configure the width on all title variations is available as `width` (0 for full width).
 
-# Introduction
-> You may be familiar with my previous plugins that achieved similar goals - [AutoSect for Atom](https://github.com/guywald1/auto-sect) and [Prismo for vim](https://github.com/guywald1/vim-prismo).
+## Features
+
+* Can comment out a line or several lines into a title
+* Formatting is highly configurable (width, dash, format, casing) , and is available in three variations (_normal_, _light_, _hair_)
+* For languages not registered by VSCode by default (read: [language identifiers](https://code.visualstudio.com/docs/languages/identifiers)), the user will specify the format of their choosing
+
+## Features to be Added
+
+* Ability to separate a multi-line selection into _regions_ (i.e. starting with `#region <REGION_NAME>` and ending with `#endregion <REGION_NAME>`)
+* Decorations?
+
+## Configuration
 
 > For future reference, I will call a section/title/separator by the generic name of _title_.
-
-Who among has not wished for an easy way to format our titles? Sometimes, we just want to annotate a certain section of our code in a beautiful manner.
 
 This extension will help you format your source code titles as you see fit. It is highly configurable so you may set them according to your personal tastes.
 
 There are three variations:
 
-### Normal
-
-This title is the regular title you would get when calling `> Prismo: Decorate Title`.
-By default, it spans across the entire document and should be used for top-level separation.
-
-### Light and Hair
-
-These title variations are for subtitles.
+* **Normal**: This title is the regular title you would get when calling `> Prismo: Decorate Title`.
+    By default, it spans across the entire document and should be used for top-level separation.
+* **Light + Hair**: These title variations are for subtitles.
 
 IMO, _light_ should be used for subtitles and _hair_ for separating your inner-most comment regions.
-
-# Configuration
 
 You have several options to configure Prismo in your `settings.json`.
 The top-level ones are for the _normal_ title (calling `> Prismo: Decorate Title`):
@@ -111,33 +117,17 @@ However, they have different defaults.
 **width**: 30
 **shouldUppercase**: false
 
-# Future Improvements
+### `prismo.commentPatterns`
 
-## Region Sectioning
+This is an object containing a mapping of a language identifier to its respective commenting pattern, with the title represented by `%s`.
+For example, a row containing `hello world` and the commenting pattern `# %s #` could be commented like so: `# --- hello world --- #`.
+For a language not existing in the extension's presets, the user will have to input the appropriate commenting pattern and it will be saved in this object.
 
-_VSCode_, among other code editors, allows the use of [region](https://code.visualstudio.com/docs/editor/codebasics#_folding) for folding.
-The user will be able to execute a command for selecting multiple lines, entering the desired title, and adding comments for making it a region.
+Example configuration:
 
-  > i.e. seleting:
-  > ```javascript
-  > const obj = { foo: 'bar' }
-  > console.log(obj.foo)
-  > ```
-  > and entering _myTitle_ would replace the selected lines into something like:
-  > ```javascript
-  > // ------- myTitle -------
-  > 
-  > //#region myTitle
-  > const obj = { foo: 'bar' }
-  > console.log(obj.foo)
-  > //#endregion myTitle
-  > ```
-
-## Colored Titles
-
-The user will be able to configure colors for their titles (similarly to the [todo-highlight](https://github.com/wayou/vscode-todo-highlight) extension).
-
-## Multiple Variations
-
-The user will be able to set more than three variations for titles and subtitles.
-
+```json
+{
+    "python": "# %s",
+    "javascript": "// %s"
+}
+```
