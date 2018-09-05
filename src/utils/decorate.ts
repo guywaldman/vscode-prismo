@@ -1,4 +1,4 @@
-import { Config, Level, defaultConfig } from "./config";
+import { LevelConfig, Level, LevelKey, levelKeyFromIndex, getConfig } from "./config";
 
 /**
  * Formats raw title string and returns the formatted string.
@@ -24,28 +24,21 @@ const formatTitle: (string, boolean?) => string = (
 export default function decorate(
   title: string,
   width: number,
-  options: Partial<Config> = defaultConfig,
-  level: Level = 0
+  level: Level = 0,
+  configOverrides: Partial<{ [s in LevelKey]: Partial<LevelConfig> }> = {}
 ): string {
   // resolve settings from config
-  const additionalOptions =
-    level === 0
-      ? {}
-      : level === 1
-        ? options.light || defaultConfig.light
-        : options.hair || defaultConfig.hair;
-  const { padding: titlePadding, dash, shouldUppercase } = Object.assign(
-    {},
-    defaultConfig,
-    options,
-    additionalOptions
-  );
+  const config = getConfig();
+  const levelKey = levelKeyFromIndex(level);
+  const configForLevel : LevelConfig = { ...config.get(levelKey), ...configOverrides[levelKey] };
+  
+  const { padding: paddingFromConfig, dash, shouldUppercase } = configForLevel;
 
   const titleLength = title.trim().length;
-  const padding: number = Math.max(width - titleLength - 2 * titlePadding, 0);
+  const padding: number = Math.max(width - titleLength - 2 * paddingFromConfig, 0);
   const dashRepeatLeft: number = Math.max(Math.ceil(padding / 2), 0);
   const dashRepeatRight: number = Math.max(padding - dashRepeatLeft, 0);
-  const titlePaddingStr: string = " ".repeat(titlePadding);
+  const titlePaddingStr: string = " ".repeat(paddingFromConfig);
 
   const formattedTitle: string = formatTitle(title, shouldUppercase);
 

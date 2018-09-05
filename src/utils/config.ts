@@ -1,7 +1,7 @@
 import { window, workspace, WorkspaceConfiguration } from "vscode";
 
 // TODO: document
-export interface TitleConfig {
+export interface LevelConfig {
   padding: number;
   dash: string;
   shouldUppercase: boolean;
@@ -9,19 +9,22 @@ export interface TitleConfig {
 }
 
 // TODO: document
-export interface Config extends TitleConfig {
-  light: TitleConfig;
-  hair: TitleConfig;
+export interface Config extends LevelConfig {
+  normal: LevelConfig;
+  light: LevelConfig;
+  hair: LevelConfig;
 }
 
 // TODO: document
 export enum Level {
-  normal,
-  light,
-  hair
+  Normal = 0,
+  Light,
+  Hair
 }
 
-export const configOptions: string[] = [
+export type LevelKey = "normal" | "light" | "hair";
+
+export const CONFIG_OPTIONS: string[] = [
   "padding",
   "dash",
   "shouldUppercase",
@@ -30,42 +33,49 @@ export const configOptions: string[] = [
   "hair"
 ];
 
-const defaultConfigTopLevel: TitleConfig = {
+const DEFAULT_CONFIG_OPTIONS: LevelConfig = {
   padding: 1,
   dash: "-",
   shouldUppercase: true,
   width: 0
 };
-const defaultConfigSubtitle: TitleConfig = defaultConfigTopLevel;
 
-export const defaultConfig: Config = Object.assign({}, defaultConfigTopLevel, {
-  light: Object.assign({}, defaultConfigSubtitle, {
+export const DEFAULT_CONFIG: Config = Object.assign({}, DEFAULT_CONFIG_OPTIONS, {
+  normal: DEFAULT_CONFIG_OPTIONS,
+  light: {
+    ...DEFAULT_CONFIG_OPTIONS,
     width: 40,
     shouldUppercase: false
-  }),
-  hair: Object.assign({}, defaultConfigSubtitle, {
+  },
+  hair: {
+    ...DEFAULT_CONFIG_OPTIONS,
     width: 30,
     shouldUppercase: false
-  })
+  }
 });
 
 /**
  * Returns configuration object
  * Note:  This is unmemoized and is expensive (configuration includes nested objects).
  *        Therefore, call with caution.
- * @export
  * @returns {object} configuration object
  */
-export function getConfig(): Config {
-  const config: WorkspaceConfiguration = workspace.getConfiguration(
+export function getConfig(): WorkspaceConfiguration {
+  return workspace.getConfiguration(
     "prismo",
     window.activeTextEditor.document.uri
   );
-  return <Config>configOptions.reduce((acc: object, key: string) => {
-    const value = config.get(key) || defaultConfig[key];
-    if (value !== undefined) {
-      return Object.assign(acc, { [key]: value });
-    }
-    return acc;
-  }, {});
+}
+
+// TODO: document
+export function levelKeyFromIndex(level: Level) : string {
+  switch (level) {
+    case 0:
+      return "normal";
+    case 1:
+      return "light";
+    case 2:
+    default:
+      return "hair";
+  }
 }

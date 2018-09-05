@@ -84,7 +84,6 @@ class Prismo implements Prismo {
       const decoratedTitle: string = decorate(
         title,
         rulerWidth - indentStartIndex - diff,
-        getConfig(),
         this._level
       );
 
