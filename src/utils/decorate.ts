@@ -1,3 +1,4 @@
+import { window } from "vscode";
 import { LevelConfig, Level, LevelKey, levelKeyFromIndex, getConfig } from "./config";
 
 /**
@@ -35,7 +36,11 @@ export default function decorate(
   const { padding: paddingFromConfig, dash, shouldUppercase } = configForLevel;
 
   const titleLength = title.trim().length;
-  const padding: number = Math.max(width - titleLength - 2 * paddingFromConfig, 0);
+  let padding: number = width - titleLength - 2 * paddingFromConfig;
+  if (padding < 0) {
+    window.showErrorMessage("[PRISMO]: Title was too long for configured width");
+    padding = 0;
+  }
   const dashRepeatLeft: number = Math.max(Math.ceil(padding / 2), 0);
   const dashRepeatRight: number = Math.max(padding - dashRepeatLeft, 0);
   const titlePaddingStr: string = " ".repeat(paddingFromConfig);
