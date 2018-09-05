@@ -15,7 +15,11 @@ Visual Studio Code extension to beautify your titles, sections and separators.
 
 ## Motivation
 
-I like neat and clean source code. That's about all there is to it.
+Prismo is a small, lightweight extension with a very simple premise: it offers assistance in separating your source code into convenient, structured sections.
+
+I like neat and clean source code. Generally, decorated titles in source code (as pretty as they may be) can be obtrusive and even sometimes obnoxious to work with for other developers skimming through your code in the future.
+
+However, in some cases, well-placed titles can add structure to your source code (especially on projects where large files cannot be avoided). This is where Prismo shines.
 
 > You may be familiar with my previous plugins that achieved similar goals - [AutoSect for Atom](https://github.com/guywald1/auto-sect) and [Prismo for vim](https://github.com/guywald1/vim-prismo).
 
@@ -26,100 +30,21 @@ I like neat and clean source code. That's about all there is to it.
 
 * Can comment out a line or several lines into a title
 * Formatting is highly configurable (width, dash, format, casing) , and is available in three variations (_normal_, _light_, _hair_)
+* Commenting format can be user-defined
 * For languages not registered by VSCode by default (read: [language identifiers](https://code.visualstudio.com/docs/languages/identifiers)), the user will specify the format of their choosing
 
 ## Features to be Added
 
+* Ability to configure, for each level, whether the width should be absolute or relative (and take indentation into consideration)
+* Ability to configure, for each level, whether the title should be padded on the left and whether the title should be padded on the right
 * Ability to separate a multi-line selection into _regions_ (i.e. starting with `#region <REGION_NAME>` and ending with `#endregion <REGION_NAME>`)
 * Decorations?
 
-## Configuration
-
-> For future reference, I will call a section/title/separator by the generic name of _title_.
-
-This extension will help you format your source code titles as you see fit. It is highly configurable so you may set them according to your personal tastes.
-
-There are three variations:
-
-* **Normal**: This title is the regular title you would get when calling `> Prismo: Decorate Title`.
-    By default, it spans across the entire document and should be used for top-level separation.
-* **Light + Hair**: These title variations are for subtitles.
-
-IMO, _light_ should be used for subtitles and _hair_ for separating your inner-most comment regions.
-
-You have several options to configure Prismo in your `settings.json`.
-The top-level ones are for the _normal_ title (calling `> Prismo: Decorate Title`):
-
-### `prismo.dash`
-
-The character to be used as a dash.
-
-**type**: _string_
-
-**Default**: _-_
-
-### `prismo.width`
-
-How wide the title should span.
-
-If it is 0, the title will span across the entire editor width.
-
-**type**: _number_
-
-**Default**: 0
-
-### `prismo.padding`
-
-Padding between the title and the dashes.
-
-> i.e. with a padding of _4_:
-> ```
-> /* ---    myTitle    ---
-> ```
-
-**type**: _number_
-
-**Default**: 1
-
-### `prismo.shouldUppercase`
-
-Whether the title should be uppercased or not.
-
-**type**: _boolean_
-
-**Default**: true
-
-## `prismo.light` and `prismo.hair`
-
-These are configurations for your title variatons.
-Both are objects containing the properties:
-
-- dash
-- padding
-- shouldUppercase
-- width
-
-All are identical to the top-level ones, and are specific to each title variation.
-
-However, they have different defaults.
-
-### `prismo.light`
-
-**Defaults**:
-
-* **width**: 40
-* **shouldUppercase**: false
-
-### `prismo.hair`
-
-**Defaults**:
-
-* **width**: 30
-* **shouldUppercase**: false
+## Top-Level Configuration
 
 ### `prismo.commentPatterns`
 
-This is an object containing a mapping of a language identifier to its respective commenting pattern, with the title represented by `%s`.
+This is a top-level configuration object containing a mapping of a language identifier to its respective commenting pattern, with the title represented by `%s`.
 For example, a row containing `hello world` and the commenting pattern `# %s #` could be commented like so: `# --- hello world --- #`.
 For a language not existing in the extension's presets, the user will have to input the appropriate commenting pattern and it will be saved in this object.
 
@@ -131,3 +56,45 @@ Example configuration:
     "javascript": "// %s"
 }
 ```
+
+## Level-specific Configuration
+
+There are three variations/**levels**:
+
+* **Normal**: This title is the regular title you would get when calling `> Prismo: Decorate Title`.
+    By default, it spans across the entire document and should be used for top-level separation.
+* **Light + Hair**: These title variations are for subtitles.
+
+You can customize the configurations per level, meaning `prismo.normal` contains the configurations for the top-level titles and `prismo.light` and `prismo.hair` contain the same types of options.
+
+`prismo.normal`, `prismo.light` and `prismo.hair` are all objects containing the following properties:
+
+* `dash` (_string_): Type of dash decorating the title, i.e. `-` -> `--- TITLE ---` or `~` -> `~~~ TITLE ---`
+* `padding` (_number_): Length of the padding surrounding the title text.
+* `shouldUppercase` (_boolean_): Whether the title should be uppercased.
+* `width` (_number_): Width of the title.
+
+However, they have different defaults.
+
+### Default Configurations Per Level
+
+* `prismo.normal`:
+
+    * `dash`: "-"
+    * `padding`: 1
+    * `shouldUppercase`: true
+    * `width`: 0 (full width)
+
+* `prismo.light`:
+
+    Same as `prismo.normal`, except:
+
+    * `width`: 40
+    * `shouldUppercase`: false
+
+* `prismo.hair`:
+
+    Same as `prismo.normal`, except:
+
+    * `width`: 30
+    * `shouldUppercase`: false
