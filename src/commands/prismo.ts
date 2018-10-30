@@ -1,114 +1,92 @@
-import {
-  window,
-  TextEditor,
-  TextEditorEdit,
-  commands,
-  Range,
-  Position,
-  TextDocument,
-  Selection
-} from "vscode";
-import decorate from "../utils/decorate";
+import * as vscode from "vscode";
+
+import decorateTitle from "../utils/decorate";
 import { getRulerByLevel } from "../utils/ruler";
-import { getConfig, Level } from "../utils/config";
 import {
   commentPatternFromLanguage,
   lengthDiffFromCommentPattern
 } from "../utils/comments/index";
 
-interface Prismo {
-  new (TextEditor, Level);
-  decorate(): Promise<any>;
-}
+type DecoratedTitle = {
+  decoratedTitle: string;
+  rangeToReplace: vscode.Range;
+};
 
-class Prismo implements Prismo {
-  private _level: number;
-  private _editor: TextEditor;
+// TODO: document
+async function computeRangeAndTitle(
+  editor: vscode.TextEditor,
+  level: number
+): Promise<DecoratedTitle[]> {
+  const selection = editor.selection;
 
-  constructor(editor: TextEditor, level: Level) {
-    this._editor = editor;
-    this._level = level;
+  const diff = lengthDiffFromCommentPattern(editor.document.languageId);
+
+  let results = [];
+  for (
+    let lineNumber = selection.start.line;
+    lineNumber <= selection.end.line;
+    lineNumber++
+  ) {
+    const { document } = editor;
+    const line = document.lineAt(lineNumber);
+    const rulerWidth: number = getRulerByLevel(level);
+    const { firstNonWhitespaceCharacterIndex: indentStartIndex } = line;
+    const rangeToReplace: vscode.Range = new vscode.Range(
+      new vscode.Position(lineNumber, indentStartIndex),
+      new vscode.Position(lineNumber, rulerWidth)
+    );
+
+    const range: vscode.Range = line.range;
+
+    const title = editor.document.getText(range).trim();
+    const decoratedTitle: string = decorateTitle(
+      title,
+      rulerWidth - indentStartIndex - diff,
+      level
+    );
+
+    results.push({ decoratedTitle, rangeToReplace });
   }
-
-  // TODO: document
-  public async decorate(): Promise<any> {
-    const editor = this._editor;
-    const selection = editor.selection;
-
-    if (!this._editor)
-      return Promise.reject(new Error("No currently active editor."));
-
-    const {
-      document: { languageId }
-    } = editor;
-
-    const commentPattern = await commentPatternFromLanguage(languageId);
-    const linesDecorationInfo = await this._computeRangeAndTitle();
-
-    for (let { rangeToReplace, decoratedTitle } of linesDecorationInfo) {
-      await editor.edit((edit: TextEditorEdit) => {
-        edit.replace(
-          rangeToReplace,
-          commentPattern.replace("%s", decoratedTitle)
-        );
-      });
-    }
-    let linesToMoveDown =
-      Math.max(0, selection.start.line - selection.end.line) + 1;
-    commands.executeCommand("cursorMove", {
-      to: "down",
-      by: "line",
-      value: linesToMoveDown
-    });
-  }
-
-  // TODO: document
-  private _computeRangeAndTitle(): Promise<
-    Array<{ decoratedTitle: string; rangeToReplace: Range }>
-  > {
-    const editor = this._editor;
-    const selection: Selection = editor.selection;
-
-    const diff = lengthDiffFromCommentPattern(editor.document.languageId);
-
-    let results = [];
-    for (
-      let lineNumber = selection.start.line;
-      lineNumber <= selection.end.line;
-      lineNumber++
-    ) {
-      const { document } = editor;
-      const line = document.lineAt(lineNumber);
-      const rulerWidth: number = getRulerByLevel(this._level);
-      const { firstNonWhitespaceCharacterIndex: indentStartIndex } = line;
-      const rangeToReplace: Range = new Range(
-        new Position(lineNumber, indentStartIndex),
-        new Position(lineNumber, rulerWidth)
-      );
-
-      const range: Range = line.range;
-
-      const title = editor.document.getText(range).trim();
-      const decoratedTitle: string = decorate(
-        title,
-        rulerWidth - indentStartIndex - diff,
-        this._level
-      );
-
-      results.push({ decoratedTitle, rangeToReplace });
-    }
-    return Promise.resolve(results);
-  }
+  return Promise.resolve(results);
 }
 
 // TODO: document
-export default function prismo(level: number = 0) {
-  return (editor: TextEditor) => {
-    const prismo: Prismo = new Prismo(editor, level);
-    prismo
-      .decorate()
-      .catch(e =>
-        window.showErrorMessage("[PRISMO]: " + e || "Unexepected error.")
+async function decorate(
+  editor: vscode.TextEditor | null,
+  level: number
+): Promise<any> {
+  if (!editor) {
+    return Promise.reject(new Error("No currently active editor."));
+  }
+
+  const selection = editor.selection;
+  const languageId = editor.document.languageId;
+
+  const commentPattern = await commentPatternFromLanguage(languageId);
+  const linesDecorationInfo = await computeRangeAndTitle(editor, level);
+
+  for (let { rangeToReplace, decoratedTitle } of linesDecorationInfo) {
+    await editor.edit(edit => {
+      edit.replace(
+        rangeToReplace,
+        commentPattern.replace("%s", decoratedTitle)
       );
-  };
+    });
+  }
+  let linesToMoveDown =
+    Math.max(0, selection.start.line - selection.end.line) + 1;
+  vscode.commands.executeCommand("cursorMove", {
+    to: "down",
+    by: "line",
+    value: linesToMoveDown
+  });
+}
+
+export default function prismo(level: number = 0) {
+  return (editor: vscode.TextEditor) =>
+    decorate(editor, level).catch(e => {
+      vscode.window.showErrorMessage(
+        `[vscode-prismo]: ${e || "Unexpected error"}`
+      );
+    });
 }
