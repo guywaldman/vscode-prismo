@@ -143,9 +143,8 @@
         "@types/node": "^10.9.4",
         "prettier": "^1.14.2",
         "prettier-tslint": "^0.4.0",
-        "vscode": "^1.1.21",
-        "typescript": "^3.0.3"
+        "typescript": "^3.0.3",
+        "vscode": "^1.1.21"
     },
-    "dependencies": {
-    }
+    "dependencies": {}
 }

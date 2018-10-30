@@ -1,38 +1,26 @@
-import { commands, Disposable, TextEditor, TextEditorEdit, ExtensionContext } from "vscode";
+import { commands, TextEditor, ExtensionContext } from "vscode";
 import { Level } from "./utils/config";
 import prismo from "./commands/prismo";
+import regionize from "./commands/regionize";
 
-function prismoCommand(level: Level = 0): (TextEditor) => void {
-  return (editor: TextEditor) => prismo(editor, level);
-}
+const COMMANDS = {
+  prismo: prismo(),
+  "prismo-light": prismo(1),
+  "prismo-hair": prismo(2),
+  regionize: regionize
+};
 
-// (from docs)
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: ExtensionContext) {
-  // log that everything is working as expected
-  console.log("extension vscode-prismo is running");
+  console.log("[vscode-prismo] Extension is running.");
 
-  let disposable: Disposable = commands.registerTextEditorCommand(
-    "extension.prismo",
-    prismoCommand()
-  );
-
-  let disposableLight: Disposable = commands.registerTextEditorCommand(
-    "extension.prismo-light",
-    prismoCommand(1)
-  );
-
-  let disposableHair: Disposable = commands.registerTextEditorCommand(
-    "extension.prismo-hair",
-    prismoCommand(2)
-  );
-
-  context.subscriptions.push(disposable);
-  context.subscriptions.push(disposableLight);
-  context.subscriptions.push(disposableHair);
+  for (let [title, command] of Object.entries(COMMANDS)) {
+    context.subscriptions.push(
+      commands.registerTextEditorCommand(`extension.${title}`, command)
+    );
+  }
 }
 
-// (from docs)
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+  console.log("[vscode-prismo] Extension has been deactivated.");
+}

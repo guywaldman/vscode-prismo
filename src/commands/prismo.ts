@@ -17,12 +17,12 @@ import {
 } from "../utils/comments/index";
 
 interface Prismo {
-  new(TextEditor, Level);
+  new (TextEditor, Level);
   decorate(): Promise<any>;
 }
 
 class Prismo implements Prismo {
-  private _level : number;
+  private _level: number;
   private _editor: TextEditor;
 
   constructor(editor: TextEditor, level: Level) {
@@ -38,7 +38,9 @@ class Prismo implements Prismo {
     if (!this._editor)
       return Promise.reject(new Error("No currently active editor."));
 
-    const { document: { languageId } } = editor;
+    const {
+      document: { languageId }
+    } = editor;
 
     const commentPattern = await commentPatternFromLanguage(languageId);
     const linesDecorationInfo = await this._computeRangeAndTitle();
@@ -51,24 +53,30 @@ class Prismo implements Prismo {
         );
       });
     }
-    let linesToMoveDown = Math.max(0, selection.start.line - selection.end.line) + 1;
+    let linesToMoveDown =
+      Math.max(0, selection.start.line - selection.end.line) + 1;
     commands.executeCommand("cursorMove", {
       to: "down",
       by: "line",
       value: linesToMoveDown
     });
-
   }
 
   // TODO: document
-  private _computeRangeAndTitle() : Promise<Array<{ decoratedTitle: string, rangeToReplace: Range }>> {
+  private _computeRangeAndTitle(): Promise<
+    Array<{ decoratedTitle: string; rangeToReplace: Range }>
+  > {
     const editor = this._editor;
     const selection: Selection = editor.selection;
 
     const diff = lengthDiffFromCommentPattern(editor.document.languageId);
 
     let results = [];
-    for (let lineNumber = selection.start.line; lineNumber <= selection.end.line; lineNumber++) {
+    for (
+      let lineNumber = selection.start.line;
+      lineNumber <= selection.end.line;
+      lineNumber++
+    ) {
       const { document } = editor;
       const line = document.lineAt(lineNumber);
       const rulerWidth: number = getRulerByLevel(this._level);
@@ -94,9 +102,13 @@ class Prismo implements Prismo {
 }
 
 // TODO: document
-export default function prismo(editor: TextEditor, level: number = 0): void {
-  const prismo: Prismo = new Prismo(editor, level);
-  prismo
-    .decorate()
-    .catch(e => window.showErrorMessage("[PRISMO]: " + e || "Unexepected error."));
+export default function prismo(level: number = 0) {
+  return (editor: TextEditor) => {
+    const prismo: Prismo = new Prismo(editor, level);
+    prismo
+      .decorate()
+      .catch(e =>
+        window.showErrorMessage("[PRISMO]: " + e || "Unexepected error.")
+      );
+  };
 }
