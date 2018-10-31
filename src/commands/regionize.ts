@@ -40,8 +40,7 @@ export default async function regionize(editor: vscode.TextEditor) {
   const eol = endOfLine(editor.document.eol);
   const startChar = editor.document.lineAt(selectionStart.line)
     .firstNonWhitespaceCharacterIndex;
-  const endChar = editor.document.lineAt(selectionEnd.line)
-    .firstNonWhitespaceCharacterIndex;
+  const endChar = editor.document.lineAt(selectionEnd.line).range.end.character;
   const indent = editor.document.getText(
     new vscode.Range(
       new vscode.Position(selection.start.line, 0),
@@ -55,7 +54,7 @@ export default async function regionize(editor: vscode.TextEditor) {
       indent + start + eol
     );
     edit.insert(
-      new vscode.Position(selection.end.line, selection.end.character + 1),
+      new vscode.Position(selection.end.line, endChar + 1),
       eol + indent + end
     );
   });
