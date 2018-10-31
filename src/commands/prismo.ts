@@ -1,11 +1,12 @@
 import * as vscode from "vscode";
 
-import decorateTitle from "../utils/decorate";
+import decorateTitle, { constructTitle } from "../utils/decorate";
 import { getRulerByLevel } from "../utils/ruler";
 import {
   commentPatternFromLanguage,
   lengthDiffFromCommentPattern
 } from "../utils/comments/index";
+import { getConfig, getConfigForLevel } from "../utils/config";
 
 type DecoratedTitle = {
   decoratedTitle: string;
@@ -64,13 +65,12 @@ async function decorate(
 
   const commentPattern = await commentPatternFromLanguage(languageId);
   const linesDecorationInfo = await computeRangeAndTitle(editor, level);
+  const config = getConfigForLevel(level);
 
   for (let { rangeToReplace, decoratedTitle } of linesDecorationInfo) {
+    const title = constructTitle(commentPattern, decoratedTitle);
     await editor.edit(edit => {
-      edit.replace(
-        rangeToReplace,
-        commentPattern.replace("%s", decoratedTitle)
-      );
+      edit.replace(rangeToReplace, title);
     });
   }
   let linesToMoveDown =

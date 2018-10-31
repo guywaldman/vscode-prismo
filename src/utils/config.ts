@@ -40,19 +40,23 @@ const DEFAULT_CONFIG_OPTIONS: LevelConfig = {
   width: 0
 };
 
-export const DEFAULT_CONFIG: Config = Object.assign({}, DEFAULT_CONFIG_OPTIONS, {
-  normal: DEFAULT_CONFIG_OPTIONS,
-  light: {
-    ...DEFAULT_CONFIG_OPTIONS,
-    width: 40,
-    shouldUppercase: false
-  },
-  hair: {
-    ...DEFAULT_CONFIG_OPTIONS,
-    width: 30,
-    shouldUppercase: false
+export const DEFAULT_CONFIG: Config = Object.assign(
+  {},
+  DEFAULT_CONFIG_OPTIONS,
+  {
+    normal: DEFAULT_CONFIG_OPTIONS,
+    light: {
+      ...DEFAULT_CONFIG_OPTIONS,
+      width: 40,
+      shouldUppercase: false
+    },
+    hair: {
+      ...DEFAULT_CONFIG_OPTIONS,
+      width: 30,
+      shouldUppercase: false
+    }
   }
-});
+);
 
 /**
  * Returns configuration object
@@ -68,7 +72,7 @@ export function getConfig(): WorkspaceConfiguration {
 }
 
 // TODO: document
-export function levelKeyFromIndex(level: Level) : string {
+export function levelKeyFromIndex(level: Level): string {
   switch (level) {
     case 0:
       return "normal";
@@ -78,4 +82,18 @@ export function levelKeyFromIndex(level: Level) : string {
     default:
       return "hair";
   }
+}
+
+// TODO: document
+export function getConfigForLevel(
+  level: number = 0,
+  overrides = {}
+): LevelConfig {
+  const config = getConfig();
+  const levelKey = levelKeyFromIndex(level);
+  const configForLevel: LevelConfig = {
+    ...config.get(levelKey),
+    ...overrides[levelKey]
+  };
+  return configForLevel;
 }

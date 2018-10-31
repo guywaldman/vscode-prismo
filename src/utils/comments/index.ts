@@ -1,12 +1,15 @@
+// TODO: unite functions
+
 import * as vscode from "vscode";
 
 import {
   tryResolveFromConfig,
   tryUpdateConfigWithUserInput
-} from "./patternFromConfiguration";
-import patternFromPresets from "./patternFromPresets";
+} from "./commentPatternFromConfig";
+import commentPatternFromPresets from "./commentPatternFromPresets";
+import regionPatternFromPresets from "./regionPatternFromPresets";
 
-const DEFAULT_PATTERN = "// %s";
+const DEFAULT_PATTERN = "//%s";
 
 /**
  * Resolves difference in length from a string pattern.
@@ -15,7 +18,7 @@ const DEFAULT_PATTERN = "// %s";
  * @param {string} commentPattern pattern for the comment (i.e. `// %s`)
  * @return {number} difference in length
  */
-function lengthDiffFromCommentPattern (commentPattern: string) : number {
+function lengthDiffFromCommentPattern(commentPattern: string): number {
   return commentPattern.length - 2;
 }
 
@@ -41,7 +44,7 @@ async function commentPatternFromLanguage(languageId: string): Promise<string> {
   }
 
   // resolve from presets
-  const tryPatternFromPresets = patternFromPresets(languageId);
+  const tryPatternFromPresets = commentPatternFromPresets(languageId);
   if (tryPatternFromPresets) {
     return Promise.resolve(tryPatternFromPresets);
   }
@@ -60,4 +63,40 @@ async function commentPatternFromLanguage(languageId: string): Promise<string> {
   return DEFAULT_PATTERN;
 }
 
-export { lengthDiffFromCommentPattern, commentPatternFromLanguage };
+async function regionPatternFromLanguage(languageId: string): Promise<string> {
+  const configuration = vscode.workspace.getConfiguration(
+    "prismo.regionPatterns",
+    null
+  );
+
+  // resolve from config
+  const patternFromConfig = tryResolveFromConfig(configuration, languageId);
+  if (patternFromConfig) {
+    return Promise.resolve(patternFromConfig);
+  }
+
+  // resolve from presets
+  const tryPatternFromPresets = regionPatternFromPresets(languageId);
+  if (tryPatternFromPresets) {
+    return Promise.resolve(tryPatternFromPresets);
+  }
+
+  // ask for user input and update config
+  try {
+    const userPattern = await tryUpdateConfigWithUserInput(
+      configuration,
+      languageId
+    );
+    return userPattern;
+  } catch (e) {
+    console.log(e);
+  }
+
+  return DEFAULT_PATTERN;
+}
+
+export {
+  lengthDiffFromCommentPattern,
+  commentPatternFromLanguage,
+  regionPatternFromLanguage
+};

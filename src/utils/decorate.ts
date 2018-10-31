@@ -1,5 +1,12 @@
 import { window } from "vscode";
-import { LevelConfig, Level, LevelKey, levelKeyFromIndex, getConfig } from "./config";
+import {
+  LevelConfig,
+  Level,
+  LevelKey,
+  levelKeyFromIndex,
+  getConfig,
+  getConfigForLevel
+} from "./config";
 
 /**
  * Formats raw title string and returns the formatted string.
@@ -13,6 +20,20 @@ const formatTitle: (string, boolean?) => string = (
 ) => {
   return shouldUppercase ? title.toUpperCase() : title;
 };
+
+// TODO: document
+export function constructTitle(
+  commentPattern: string,
+  title: string,
+  margin: number = 1
+) {
+  const indexOfTitle = commentPattern.indexOf("%s");
+  const leftOfPattern = commentPattern.slice(0, indexOfTitle);
+  const rightOfPattern = commentPattern.slice(indexOfTitle + 2);
+  const marginString = " ".repeat(margin);
+  const rightMargin = rightOfPattern.length > 0 ? marginString : "";
+  return `${leftOfPattern}${marginString}${title}${rightMargin}${rightOfPattern}`;
+}
 
 /**
  * Returns decorated text, formatted according to defined padding and dash
@@ -29,16 +50,15 @@ export default function decorate(
   configOverrides: Partial<{ [s in LevelKey]: Partial<LevelConfig> }> = {}
 ): string {
   // resolve settings from config
-  const config = getConfig();
-  const levelKey = levelKeyFromIndex(level);
-  const configForLevel : LevelConfig = { ...config.get(levelKey), ...configOverrides[levelKey] };
-  
-  const { padding: paddingFromConfig, dash, shouldUppercase } = configForLevel;
+  const config = getConfigForLevel(level, configOverrides);
+  const { padding: paddingFromConfig, dash, shouldUppercase } = config;
 
   const titleLength = title.trim().length;
   let padding: number = width - titleLength - 2 * paddingFromConfig;
   if (padding < 0) {
-    window.showErrorMessage("[PRISMO]: Title was too long for configured width");
+    window.showErrorMessage(
+      "[PRISMO]: Title was too long for configured width"
+    );
     padding = 0;
   }
   const dashRepeatLeft: number = Math.max(Math.ceil(padding / 2), 0);

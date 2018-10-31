@@ -1,16 +1,16 @@
 // TODO: add all languages from https://code.visualstudio.com/docs/languages/identifiers
 
 const BY_LANGUAGE = {
-  xml: "<!-- %s -->",
-  hash: "# %s",
-  bat: "REM %s",
-  percent: "% %s",
-  handlebars: "{{!-- %s --}}",
-  doubleDash: "-- %s",
-  block: "/* %s */",
-  doubleLine: "-- %s",
-  pug: "//- %s",
-  common: "// %s"
+  xml: "<!--%s-->",
+  hash: "#%s",
+  bat: "REM%s",
+  percent: "%%s",
+  handlebars: "{{!--%s--}}",
+  doubleDash: "--%s",
+  block: "/*%s*/",
+  doubleLine: "--%s",
+  pug: "//-%s",
+  common: "//%s"
 };
 
 const BY_PATTERN = {
@@ -41,6 +41,7 @@ const BY_PATTERN = {
     "c",
     "c#",
     "cpp",
+    "cs",
     "d"
   ]
 };
