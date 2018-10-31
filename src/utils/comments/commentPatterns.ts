@@ -16,16 +16,16 @@ const BY_LANGUAGE = {
 const BY_PATTERN = {
   block: ["css"],
   hash: [
-    "python",
-    "shellscript",
-    "dockerfile",
-    "ruby",
     "coffeescript",
+    "dockerfile",
     "dockerfile",
     "elixir",
     "julia",
     "makefile",
     "perl",
+    "python",
+    "ruby",
+    "shellscript",
     "yaml"
   ],
   xml: ["xml", "xsl", "html", "markdown"],
@@ -34,15 +34,16 @@ const BY_PATTERN = {
   doubleDash: ["lua", "sql", "haskell", "cabal"],
   doubleLine: ["sql", "ada", "haskell", "lua", "pig"],
   common: [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "java",
     "c",
     "c#",
     "cpp",
-    "cs",
-    "d"
+    "csharp",
+    "d",
+    "java",
+    "javascript",
+    "javascriptreact",
+    "rust",
+    "typescript"
   ]
 };
 

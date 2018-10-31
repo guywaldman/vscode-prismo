@@ -1,9 +1,13 @@
 // TODO: add all languages from https://code.visualstudio.com/docs/languages/identifiers
 
-const BY_LANGUAGE = {};
+import commentPatterns from "./commentPatterns";
+
+const BY_LANGUAGE = {
+  hash: "#%s"
+};
 
 const BY_PATTERN = {
-  hash: ["cs"]
+  hash: ["csharp"]
 };
 
 function computePatternByLanguage(): { [s: string]: string } {
@@ -20,7 +24,7 @@ const patterns = computePatternByLanguage();
 
 // TODO: doc
 function patternFromPresets(languageId: string): string | undefined {
-  return patterns[languageId];
+  return patterns[languageId] || commentPatterns[languageId];
 }
 
 export default patternFromPresets;

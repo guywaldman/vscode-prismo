@@ -31,8 +31,25 @@ export function constructTitle(
   const leftOfPattern = commentPattern.slice(0, indexOfTitle);
   const rightOfPattern = commentPattern.slice(indexOfTitle + 2);
   const marginString = " ".repeat(margin);
-  const rightMargin = rightOfPattern.length > 0 ? marginString : "";
-  return `${leftOfPattern}${marginString}${title}${rightMargin}${rightOfPattern}`;
+  const marginRight = rightOfPattern.length > 0 ? marginString : "";
+  return `${leftOfPattern}${marginString}${title}${marginRight}${rightOfPattern}`;
+}
+
+// TODO: document
+// TODO: refactor to accept object
+export function constructRegionTitle(
+  commentPattern: string,
+  title: string,
+  margin: number = 1,
+  shouldAddMarginLeft: boolean = false,
+  shouldAddMarginRight: boolean = true
+) {
+  const indexOfTitle = commentPattern.indexOf("%s");
+  const leftOfPattern = commentPattern.slice(0, indexOfTitle);
+  const rightOfPattern = commentPattern.slice(indexOfTitle + 2);
+  const marginLeft = shouldAddMarginLeft ? " ".repeat(margin) : "";
+  const marginRight = shouldAddMarginRight ? " ".repeat(margin) : "";
+  return `${leftOfPattern}${marginLeft}${title}${marginRight}${rightOfPattern}`;
 }
 
 /**
