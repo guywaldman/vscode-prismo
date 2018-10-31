@@ -3,7 +3,7 @@ import {
   commentPatternFromLanguage,
   regionPatternFromLanguage
 } from "../utils/comments";
-import { constructTitle, constructRegionTitle } from "../utils/decorate";
+import { constructRegionTitle } from "../utils/decorate";
 
 function endOfLine(eol: vscode.EndOfLine) {
   return eol === 1 ? "\n" : "\r\n";
