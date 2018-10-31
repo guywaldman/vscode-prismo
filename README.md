@@ -31,6 +31,7 @@ However, in some cases, well-placed titles can add structure to your source code
 - Can comment out a line or several lines into a title
 - Formatting is highly configurable (width, dash, format, casing) , and is available in three variations (_normal_, _light_, _hair_)
 - Commenting format can be user-defined
+- Ability to add regions by selection
 - For languages not registered by VSCode by default (read: [language identifiers](https://code.visualstudio.com/docs/languages/identifiers)), the user will specify the format of their choosing
 
 ## Features to be Added
