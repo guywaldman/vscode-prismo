@@ -1,7 +1,8 @@
 {
-    "rules": {
-        "semicolon": [true, "always"],
-        "quotemark": [true, "double"],
-        "max-line-length": [false, 120]
-    }
+  "rules": {
+    "semicolon": [true, "always"],
+    "quotemark": [true, "double"],
+    "max-line-length": [false, 120],
+    "indent": [true, "spaces", 2]
+  }
 }

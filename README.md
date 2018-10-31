@@ -5,11 +5,11 @@
 
 Visual Studio Code extension to beautify your titles, sections and separators.
 
-[Marketplace](https://marketplace.visualstudio.com/items?itemName=guywaldman.prismo)  |  [GitHub](https://github.com/guywald1/vscode-prismo)
+[Marketplace](https://marketplace.visualstudio.com/items?itemName=guywaldman.prismo) | [GitHub](https://github.com/guywald1/vscode-prismo)
 
 <!-- ![Preview](https://raw.githubusercontent.com/guywald1/vscode-prismo/master/assets/preview.gif) -->
 
-![Preview](/assets/preview.gif)
+![Preview](/assets/preview-comments.gif)
 
 ---
 
@@ -28,17 +28,16 @@ However, in some cases, well-placed titles can add structure to your source code
 
 ## Features
 
-* Can comment out a line or several lines into a title
-* Formatting is highly configurable (width, dash, format, casing) , and is available in three variations (_normal_, _light_, _hair_)
-* Commenting format can be user-defined
-* For languages not registered by VSCode by default (read: [language identifiers](https://code.visualstudio.com/docs/languages/identifiers)), the user will specify the format of their choosing
+- Can comment out a line or several lines into a title
+- Formatting is highly configurable (width, dash, format, casing) , and is available in three variations (_normal_, _light_, _hair_)
+- Commenting format can be user-defined
+- For languages not registered by VSCode by default (read: [language identifiers](https://code.visualstudio.com/docs/languages/identifiers)), the user will specify the format of their choosing
 
 ## Features to be Added
 
-* Ability to configure, for each level, whether the width should be absolute or relative (and take indentation into consideration)
-* Ability to configure, for each level, whether the title should be padded on the left and whether the title should be padded on the right
-* Ability to separate a multi-line selection into _regions_ (i.e. starting with `#region <REGION_NAME>` and ending with `#endregion <REGION_NAME>`)
-* Decorations?
+- Ability to configure, for each level, whether the width should be absolute or relative (and take indentation into consideration)
+- Ability to configure, for each level, whether the title should be padded on the left and whether the title should be padded on the right
+- Decorations?
 
 ## Top-Level Configuration
 
@@ -52,8 +51,8 @@ Example configuration:
 
 ```json
 {
-    "python": "# %s",
-    "javascript": "// %s"
+  "python": "# %s",
+  "javascript": "// %s"
 }
 ```
 
@@ -61,40 +60,49 @@ Example configuration:
 
 There are three variations/**levels**:
 
-* **Normal**: This title is the regular title you would get when calling `> Prismo: Decorate Title`.
-    By default, it spans across the entire document and should be used for top-level separation.
-* **Light + Hair**: These title variations are for subtitles.
+- **Normal**: This title is the regular title you would get when calling `> Prismo: Decorate Title`.
+  By default, it spans across the entire document and should be used for top-level separation.
+- **Light + Hair**: These title variations are for subtitles.
 
 You can customize the configurations per level, meaning `prismo.normal` contains the configurations for the top-level titles and `prismo.light` and `prismo.hair` contain the same types of options.
 
 `prismo.normal`, `prismo.light` and `prismo.hair` are all objects containing the following properties:
 
-* `dash` (_string_): Type of dash decorating the title, i.e. `-` -> `--- TITLE ---` or `~` -> `~~~ TITLE ---`
-* `padding` (_number_): Length of the padding surrounding the title text.
-* `shouldUppercase` (_boolean_): Whether the title should be uppercased.
-* `width` (_number_): Width of the title.
+- `dash` (_string_): Type of dash decorating the title, i.e. `-` -> `--- TITLE ---` or `~` -> `~~~ TITLE ---`
+- `padding` (_number_): Length of the padding surrounding the title text.
+- `shouldUppercase` (_boolean_): Whether the title should be uppercased.
+- `width` (_number_): Width of the title.
 
 However, they have different defaults.
 
 ### Default Configurations Per Level
 
-* `prismo.normal`:
+- `prismo.normal`:
 
-    * `dash`: "-"
-    * `padding`: 1
-    * `shouldUppercase`: true
-    * `width`: 0 (full width)
+  - `dash`: "-"
+  - `padding`: 1
+  - `shouldUppercase`: true
+  - `width`: 0 (full width)
 
-* `prismo.light`:
+- `prismo.light`:
 
-    Same as `prismo.normal`, except:
+  Same as `prismo.normal`, except:
 
-    * `width`: 40
-    * `shouldUppercase`: false
+  - `width`: 40
+  - `shouldUppercase`: false
 
-* `prismo.hair`:
+- `prismo.hair`:
 
-    Same as `prismo.normal`, except:
+  Same as `prismo.normal`, except:
 
-    * `width`: 30
-    * `shouldUppercase`: false
+  - `width`: 30
+  - `shouldUppercase`: false
+
+## Regions
+
+![Preview](/assets/preview-regionize.gif)
+
+Use **_Prismo -> Regionize_** to add regions to your source code.
+Similarly to comments, it draws its patterns from `prismo.regionPatterns` configuration.
+
+Is planned to be more configurable in the future.
