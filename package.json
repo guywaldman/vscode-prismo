@@ -46,6 +46,11 @@
           "type": "object",
           "default": {}
         },
+        "prismo.regionPatterns": {
+          "scope": "resource",
+          "type": "object",
+          "default": {}
+        },
         "prismo.normal": {
           "type": "object",
           "scope": "resource",
