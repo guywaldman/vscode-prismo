@@ -45,15 +45,15 @@ However, in some cases, well-placed titles can add structure to your source code
 ### `prismo.commentPatterns`
 
 This is a top-level configuration object containing a mapping of a language identifier to its respective commenting pattern, with the title represented by `%s`.
-For example, a row containing `hello world` and the commenting pattern `# %s #` could be commented like so: `# --- hello world --- #`.
+For example, a row containing `hello world` and the commenting pattern `#%s#` could be commented like so: `# --- hello world --- #`.
 For a language not existing in the extension's presets, the user will have to input the appropriate commenting pattern and it will be saved in this object.
 
 Example configuration:
 
 ```json
 {
-  "python": "# %s",
-  "javascript": "// %s"
+  "python": "#%s",
+  "javascript": "//%s"
 }
 ```
 
